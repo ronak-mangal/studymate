@@ -1,0 +1,2870 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>StudyMate - AI Chapter Quiz</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Lora:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="scripts.js"></script>
+<link rel="stylesheet" type="text/css" href="styles.css">
+<style>
+:root{--font:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;--bg:#fbf6e8;--header:#fbf6e8;--surface:#ffffff;--text:#1b2433;--muted:#5b6679;--border:#dde3ee;--primary:#1f4e8c;--primary-2:#2f6fbf;--accent:#e8f0fb;--ok:#1e8a5a;--warn:#a86b12;--bad:#b83c3c;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1420;--header:#171f2e;--surface:#171f2e;--text:#e6ebf4;--muted:#9aa6bb;--border:#2a3449;--primary:#6ea6ea;--primary-2:#8dbcf2;--accent:#1d2a42;--ok:#4fc08a;--warn:#e0a84f;--bad:#ef7a7a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0f1420;--surface:#171f2e;--text:#e6ebf4;--muted:#9aa6bb;--border:#2a3449;--primary:#6ea6ea;--primary-2:#8dbcf2;--accent:#1d2a42;--ok:#4fc08a;--warn:#e0a84f;--bad:#ef7a7a;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.55;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+header{background:#000000;color:#f2f2f2;border-bottom-color:#1f1f1f;border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.15rem}
+.logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--primary),var(--primary-2));display:grid;place-items:center;color:#fff;font-weight:800}
+.sub{color:var(--muted);font-size:.85rem;font-weight:400}
+main{max-width:920px;margin:0 auto;padding:24px 16px 48px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:18px}
+h2{font-size:1.1rem;margin:0 0 10px}
+h3{font-size:1rem;margin:14px 0 6px;color:var(--primary)}
+label{display:block;font-weight:600;font-size:.9rem;margin:12px 0 6px}
+input[type=text],select,textarea{width:100%;font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+textarea{min-height:140px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--primary-2);outline-offset:1px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.row>*{flex:1 1 180px}
+.row>.grow{flex:2 1 260px}
+button{font:inherit;font-weight:600;border:0;border-radius:8px;padding:10px 16px;cursor:pointer;background:var(--primary);color:#fff;flex:0 0 auto}
+button:hover{background:var(--primary-2)}
+button:disabled{opacity:.55;cursor:not-allowed}
+button.ghost{background:transparent;color:var(--primary);border:1px solid var(--border)}
+button.ghost:hover{background:var(--accent)}
+.tabs{display:flex;gap:6px;border-bottom:1px solid var(--border);margin-bottom:18px;flex-wrap:wrap}
+.tab{background:none;color:var(--muted);border-radius:0;padding:10px 14px;border-bottom:3px solid transparent}
+.tab:hover{background:var(--accent);color:var(--text)}
+.tab.on{color:var(--primary);border-bottom-color:var(--primary)}
+.hidden{display:none!important}
+.status{color:var(--muted);font-size:.9rem;margin-top:10px;min-height:1.2em}
+.err{color:var(--bad)}
+.badge{display:inline-block;font-size:.75rem;font-weight:700;padding:3px 9px;border-radius:999px;background:var(--accent);color:var(--primary);margin-right:6px}
+.q{border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:14px}
+.q .qtext{font-weight:600;margin-bottom:8px}
+.hint{background:var(--accent);border-left:3px solid var(--warn);padding:10px 12px;border-radius:6px;margin-top:10px;font-size:.92rem}
+.feedback{border-left:3px solid var(--primary);padding:10px 12px;border-radius:6px;margin-top:10px;background:var(--bg)}
+.feedback.correct{border-left-color:var(--ok)}
+.feedback.incorrect{border-left-color:var(--bad)}
+.feedback.partly{border-left-color:var(--warn)}
+.solution{white-space:pre-wrap;font-size:.92rem;margin-top:10px;padding:10px 12px;border-radius:6px;background:var(--bg);border:1px dashed var(--border)}
+ul{padding-left:20px;margin:6px 0}
+li{margin:4px 0}
+dt{font-weight:700;margin-top:8px}
+dd{margin:2px 0 0 0;color:var(--muted)}
+.bar{height:10px;background:var(--border);border-radius:999px;overflow:hidden;margin:8px 0}
+.bar>div{height:100%;background:linear-gradient(90deg,var(--primary),var(--primary-2));width:0;transition:width .3s}
+.stats{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+.stat{flex:1 1 120px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
+.stat b{display:block;font-size:1.5rem;color:var(--primary)}
+.stat span{color:var(--muted);font-size:.8rem}
+.timer{font-size:3.2rem;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;color:var(--primary);margin:12px 0}
+.center{text-align:center}
+.muted{color:var(--muted);font-size:.9rem}
+@media (max-width:600px){.timer{font-size:2.4rem}}
+input[type=password]{width:100%;font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.auth{max-width:440px;margin:24px auto}
+.ok{color:var(--ok);font-size:.9rem;margin-top:10px;min-height:1.2em}
+.auth form{margin-top:4px}
+:focus-visible{outline:2px solid var(--primary-2);outline-offset:2px}
+header,.card{box-shadow:0 1px 2px rgba(16,24,40,.05)}
+.menu-btn{order:-1;display:inline-flex;align-items:center;justify-content:center;padding:8px;background:transparent;color:var(--text);border:1px solid var(--border)}
+.menu-btn:hover{background:var(--accent);color:var(--primary)}
+header .sub,header .muted{color:#b3b3b3}
+header .menu-btn{color:#ffffff;border-color:#333333}
+header .menu-btn:hover{background:#1a1a1a;color:#ffffff}
+header button.ghost{color:#ffffff;border-color:#333333}
+header button.ghost:hover{background:#1a1a1a}
+.brand{margin-right:auto}
+.navmenu{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 16px 14px}
+.navmenu-inner{max-width:360px;margin:0 auto;display:flex;flex-direction:column;gap:2px}
+.classlist{display:flex;flex-direction:column;gap:2px;padding-left:16px}
+.chev{font-size:.8rem;color:var(--muted)}
+.navitem{background:transparent;color:var(--text);border:1px solid transparent;font-weight:500;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.navitem:hover{background:var(--accent);color:var(--primary)}
+.home{margin-bottom:8px}
+.hero{padding:8px 0 18px}
+.eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--primary)}
+.hero h1{font-size:1.6rem;margin:4px 0 6px}
+.chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:22px}
+.chip{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.chip span{display:block;color:var(--muted);font-size:.8rem}
+.chip b{font-size:1.05rem}
+.sect{font-size:1rem;margin:0 0 10px}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:18px}
+.qcard{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:var(--surface);color:var(--text);border:1px solid var(--border);padding:16px;border-radius:12px}
+.qcard span{color:var(--muted);font-size:.85rem;font-weight:400}
+.qcard:hover{background:var(--surface);border-color:var(--primary-2)}
+.qcard:hover b{color:var(--primary)}
+.navgroup{grid-column:1/-1;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.navitem.active{border-color:var(--primary);color:var(--primary);background:var(--accent)}
+.ai-tag{font-size:.68rem;font-weight:700;padding:2px 7px;border-radius:999px;background:var(--primary);color:#fff;letter-spacing:.04em}
+button:active{transform:translateY(1px)}
+.step{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--primary);margin-bottom:2px}
+.empty{color:var(--muted);text-align:center;padding:28px 12px;border:1px dashed var(--border);border-radius:10px;font-size:.95rem}
+:root[data-mode="light"]{--bg:#fbf6e8;--header:#fbf6e8;--surface:#ffffff;--text:#1b2433;--muted:#5b6679;--border:#dde3ee;--primary:#1f4e8c;--primary-2:#2f6fbf;--accent:#e8f0fb;--ok:#1e8a5a;--warn:#a86b12;--bad:#b83c3c;color-scheme:light}
+:root[data-palette="warm"]{--font:Lora,Georgia,"Times New Roman",serif;--bg:#faf6ef;--header:#fbf6e8;--surface:#fffdf9;--text:#2b2118;--muted:#7a6a5a;--border:#e6dccd;--primary:#8a4b2a;--primary-2:#a85f38;--accent:#f5ebdd;color-scheme:light}
+:root[data-palette="midnight"]{--font:Inter,system-ui,sans-serif;--bg:#0b0f19;--header:#131a2a;--surface:#131a2a;--text:#e8edf7;--muted:#8d9bb5;--border:#243049;--primary:#7c9cff;--primary-2:#9db4ff;--accent:#1a2540;--ok:#4fc08a;--warn:#e0a84f;--bad:#ef7a7a;color-scheme:dark}
+:root[data-palette="forest"]{--font:Nunito,system-ui,sans-serif;--bg:#f1f7f2;--header:#fbf6e8;--surface:#ffffff;--text:#1d2f24;--muted:#5d7466;--border:#d5e5d9;--primary:#2d6a4f;--primary-2:#40916c;--accent:#e2f1e7;color-scheme:light}
+:root[data-palette="slate"]{--font:Inter,system-ui,sans-serif;--bg:#ffffff;--header:#fbf6e8;--surface:#f8fafc;--text:#0f172a;--muted:#64748b;--border:#e2e8f0;--primary:#0f172a;--primary-2:#334155;--accent:#f1f5f9;color-scheme:light}
+:root[data-palette="midnight"][data-mode="light"]{--bg:#fbf6e8;--header:#fbf6e8;--surface:#ffffff;--text:#1b2433;--muted:#5b6679;--border:#dde3ee;--primary:#2c5fb0;--primary-2:#3b74cc;--accent:#e8f0fb;--ok:#1e8a5a;--warn:#a86b12;--bad:#b83c3c;color-scheme:light}
+:root[data-mode="dark"]{--bg:#0f1420;--header:#171f2e;--surface:#171f2e;--text:#e6ebf4;--muted:#9aa6bb;--border:#2a3449;--primary:#8ab4f8;--primary-2:#aecbfa;--accent:#1d2a42;--ok:#4fc08a;--warn:#e0a84f;--bad:#ef7a7a;color-scheme:dark}
+#uploadSec{display:none!important}
+#homeSec{display:none!important}
+.ai-fab{position:fixed;right:18px;bottom:18px;z-index:50;background:var(--primary);color:#fff;border:0;border-radius:999px;padding:12px 18px;box-shadow:0 6px 20px rgba(0,0,0,.2);font-weight:700;cursor:pointer}
+.ai-fab:hover{background:var(--primary-2)}
+.ai-panel{position:fixed;right:18px;bottom:76px;width:min(340px,calc(100vw - 36px));max-height:60vh;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.2);z-index:50}
+.ai-panel .log{flex:1;overflow:auto;padding:12px;font-size:.92rem;min-height:120px}
+.ai-panel form{display:flex;gap:8px;padding:10px;border-top:1px solid var(--border)}
+.ai-panel textarea{min-height:44px;resize:none;flex:1}
+.dash{max-width:920px;margin:0 auto 18px;padding:0 16px}
+.dash-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 14px}
+.dash-head h1{font-size:1.5rem;margin:4px 0 0}
+.streak{background:var(--accent);color:var(--primary);font-weight:700;padding:8px 14px;border-radius:999px;font-size:.9rem}
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.dcard{margin:0}
+.subj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.scard{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px}
+.scard b{display:block;margin-bottom:4px}
+.ai-quick{display:flex;gap:6px;flex-wrap:wrap;padding:8px 10px;border-top:1px solid var(--border)}
+.ai-quick button{font-size:.75rem;padding:6px 9px}
+:root[data-palette="academic"]{--font:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--bg:#FBF8F1;--header:#F7F3EA;--surface:#FFFFFF;--text:#1B2A41;--muted:#5E6A7D;--border:#E6E0D2;--primary:#1F3A5F;--primary-2:#2C5282;--accent:#E8EFE6;--ok:#5E8C6A;--warn:#C98A1B;--bad:#B83C3C;color-scheme:light}
+footer.site{max-width:920px;margin:0 auto;padding:0 16px 32px;color:var(--muted);font-size:.8rem;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+/* ---------- RESPONSIVE LAYOUT ---------- */
+html,body{max-width:100%;overflow-x:hidden}
+img,svg,input,select,textarea{max-width:100%}
+@media (max-width:900px){
+  main{padding:20px 14px 40px}
+  .dash-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .subj-grid{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+}
+@media (max-width:720px){
+  header{padding:12px 14px;gap:10px}
+  .brand{font-size:1.05rem}
+  .sub{font-size:.78rem}
+  main{padding:16px 12px 40px}
+  .card{padding:16px}
+  .tabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{white-space:nowrap;flex:0 0 auto}
+  .row{flex-direction:column;align-items:stretch}
+  .row>*{flex:1 1 auto;width:100%}
+  .row>button{width:100%}
+  .stats{flex-direction:column}
+  .stat{flex:1 1 auto}
+  .qgrid{grid-template-columns:1fr}
+  .chips{grid-template-columns:1fr}
+  .hero h1{font-size:1.35rem}
+  .dash-head{flex-direction:column;align-items:flex-start}
+  .dash-grid{grid-template-columns:1fr}
+  .subj-grid{grid-template-columns:1fr}
+  .timer{font-size:2.6rem}
+  .auth{margin:16px auto;max-width:100%}
+  .navmenu{padding:8px 12px 12px}
+  .navmenu-inner{max-width:100%}
+  .classlist{padding-left:10px}
+  .navitem{width:100%;min-height:44px}
+  .ai-fab{right:12px;bottom:12px;padding:12px 16px}
+  .ai-panel{left:10px;right:10px;width:auto;bottom:72px;max-height:70vh}
+  .q{padding:12px}
+  .q .qtext{font-size:.95rem}
+  .solution{font-size:.9rem}
+  footer.site{flex-direction:column;align-items:flex-start;padding:0 14px 28px}
+  textarea{font-size:16px}
+  input[type=text],input[type=password],input[type=number],select{font-size:16px}
+}
+@media (max-width:420px){
+  h1{font-size:1.25rem}
+  h2{font-size:1.02rem}
+  .stat b{font-size:1.25rem}
+  button{padding:10px 12px}
+  .ai-quick button{font-size:.7rem;padding:5px 7px}
+}
+/* ---------- LEFT SIDE NAVIGATION DRAWER ---------- */
+#navMenu{position:fixed;top:0;left:0;bottom:0;width:min(320px,86vw);z-index:100;background:var(--surface);border-right:1px solid var(--border);box-shadow:4px 0 24px rgba(0,0,0,.25);overflow-y:auto;padding:70px 14px 28px;transform:translateX(0);transition:transform .25s ease;}
+#navMenu.hidden{display:block!important;transform:translateX(-105%);visibility:hidden;}
+#navMenu .navmenu-inner{max-width:100%;}
+.nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:99;}
+.nav-backdrop.hidden{display:none!important;}
+/* ---------- TOP BAR REMOVED: FLOATING THREE-LINE BUTTON ---------- */
+header{display:none!important}
+#menuBtn{position:fixed;top:12px;left:12px;z-index:101;width:44px;height:44px;border-radius:12px;background:var(--surface);color:var(--text);border:1px solid var(--border);box-shadow:0 2px 10px rgba(0,0,0,.2);display:inline-flex!important;align-items:center;justify-content:center;padding:0;}
+main{padding-top:72px!important}
+.top-title{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:101;font-weight:800;font-size:1.05rem;letter-spacing:.02em;color:var(--primary);background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0 16px;height:44px;line-height:44px;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,.2);}
+@media (max-width:420px){.top-title{font-size:.95rem;padding:0 12px}}
+/* ---------- LARGER TEXT ---------- */
+html{font-size:18px;}
+body{font-size:1.05rem;line-height:1.6;}
+button,input,select,textarea{font-size:1rem;}
+.sub,.muted,.status,.stat span,.chip span,.qcard span{font-size:.95rem;}
+.tab{font-size:1.05rem;}
+.navitem{font-size:1.02rem;}
+.navgroup{font-size:.85rem;}
+@media (max-width:720px){html{font-size:17px;}}
+@media (max-width:420px){html{font-size:16.5px;}}
+.sr-only{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;clip:rect(0 0 0 0);pointer-events:none;}
+.ai-panel form{flex-wrap:wrap;}
+.ai-panel form button{min-height:40px;}
+/* ---------- PROFILE BUTTON, MENU AND SETTINGS ---------- */
+.profile-btn{position:fixed;top:12px;right:12px;z-index:101;width:44px;height:44px;border-radius:50%;border:0;background:var(--primary);color:#fff;font-weight:800;font-size:1.1rem;box-shadow:0 2px 10px rgba(0,0,0,.2);padding:0;cursor:pointer;}
+.profile-btn.hidden{display:none!important;}
+.profile-menu{position:fixed;top:64px;right:12px;z-index:120;width:min(240px,calc(100vw - 24px));background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:8px;}
+.profile-menu.hidden{display:none!important;}
+.pm-name{padding:8px 10px;font-weight:700;border-bottom:1px solid var(--border);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pm-item{display:block;width:100%;text-align:left;background:transparent;color:var(--text);border:0;padding:10px;border-radius:8px;}
+.pm-item:hover{background:var(--accent);}
+.pm-logout{color:var(--bad);}
+.settings-panel{position:fixed;top:64px;right:12px;z-index:120;width:min(340px,calc(100vw - 24px));background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.2);padding:18px;max-height:80vh;overflow-y:auto;}
+.settings-panel.hidden{display:none!important;}
+.settings-panel h2{margin:0 0 6px;}
+.settings-panel input{width:100%;font:inherit;color:var(--text);background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;}
+.settings-panel .row{flex-direction:row;}
+/* ---------- PROFILE BUTTON AND SETTINGS ---------- */
+.profile-btn{position:fixed;top:12px;right:12px;z-index:101;width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;border:0;font-weight:800;font-size:1.05rem;box-shadow:0 2px 10px rgba(0,0,0,.25);padding:0;}
+.profile-menu{position:fixed;top:64px;right:12px;z-index:102;width:230px;max-width:calc(100vw - 24px);background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:10px;}
+.profile-menu.hidden{display:none!important;}
+.pm-name{font-weight:700;padding:6px 8px 10px;border-bottom:1px solid var(--border);margin-bottom:6px;word-break:break-word;}
+.settings{margin:16px auto;max-width:920px;}
+.settings h3{margin-top:14px;}
+.settings .row>button{flex:1 1 150px;}
+/* ---------- PROFILE DRAWER (RIGHT SIDE) ---------- */
+#profileMenu{position:fixed;top:0;right:0;bottom:0;left:auto;width:min(320px,86vw);max-width:none;border-radius:0;border:0;border-left:1px solid var(--border);box-shadow:-4px 0 24px rgba(0,0,0,.25);padding:70px 16px 24px;background:var(--surface);overflow-y:auto;z-index:120;transform:translateX(0);transition:transform .25s ease;}
+#profileMenu.hidden{display:block!important;transform:translateX(105%);visibility:hidden;}
+#profileMenu .pm-name{font-size:1.05rem;}
+#profileMenu .pm-item,#profileMenu .navitem{width:100%;}
+.prof-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:119;}
+.prof-backdrop.hidden{display:none!important;}
+.profile-btn{z-index:130!important;}
+/* ---------- SETTINGS DRAWER (RIGHT SIDE) ---------- */
+.settings-panel{position:fixed;top:0;right:0;bottom:0;left:auto;width:min(340px,90vw);max-width:none;margin:0;border-radius:0;border:0;border-left:1px solid var(--border);box-shadow:-4px 0 24px rgba(0,0,0,.25);padding:70px 16px 28px;background:var(--surface);overflow-y:auto;z-index:121;transform:translateX(0);transition:transform .25s ease;}
+.settings-panel.hidden{display:block!important;transform:translateX(105%);visibility:hidden;}
+#studySec{padding-top:76px;}
+</style>
+</head>
+<body>
+<header>
+  <button class="menu-btn" id="menuBtn" aria-label="Open navigation menu" aria-expanded="false" aria-controls="navMenu">
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+  </button>
+  <div class="brand"><div class="logo">S</div><div>StudyMate <div class="sub">Upload a chapter. Learn it. Practice it.</div></div></div>
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span class="muted" id="chapterName">No chapter loaded</span><span class="muted" id="whoami"></span><button class="ghost hidden" id="signOutBtn">Sign out</button></div>
+</header>
+<nav id="navMenu" class="navmenu hidden" aria-label="Main navigation">
+  <div class="navmenu-inner">
+    
+    
+    <button class="navitem" data-go="summary">AI Summary <span class="ai-tag">AI</span></button>
+    <button class="navitem" data-go="practice">AI Practice <span class="ai-tag">AI</span></button>
+    <button class="navitem" data-go="focus">Focus Timer</button>
+    <button class="navitem" data-go="progress">Progress</button>
+    <button class="navitem" id="classToggle" aria-expanded="false" aria-controls="classList">Class <span class="chev">&#9662;</span></button>
+    <div id="classList" class="classlist hidden">
+    <button class="navitem" id="class6Toggle" aria-expanded="false" aria-controls="subjectList">Class 6 <span class="chev">&#9662;</span></button>
+    <div id="subjectList" class="classlist hidden" data-grade-list="6">
+      <button class="navitem" id="hindiToggle" aria-expanded="false">Hindi <span class="chev">&#9662;</span></button>
+      <div id="hindiChapters" class="classlist hidden"></div>
+      <button class="navitem" id="englishToggle" aria-expanded="false">English <span class="chev">&#9662;</span></button>
+      <div id="englishChapters" class="classlist hidden"></div>
+      <button class="navitem" id="scienceToggle" aria-expanded="false">Science <span class="chev">&#9662;</span></button>
+      <div id="scienceChapters" class="classlist hidden"></div>
+      <button class="navitem" id="mathToggle" aria-expanded="false">Math <span class="chev">&#9662;</span></button>
+      <div id="mathChapters" class="classlist hidden"></div>
+      <button class="navitem" id="sstToggle" aria-expanded="false">SST <span class="chev">&#9662;</span></button>
+      <div id="sstChapters" class="classlist hidden"></div>
+    </div>
+    <button class="navitem" data-class="7">Class 7</button>
+    <button class="navitem" data-class="8">Class 8</button>
+    <button class="navitem" data-class="9">Class 9</button>
+    <button class="navitem" data-class="10">Class 10</button>
+    <button class="navitem" data-class="11">Class 11</button>
+    <button class="navitem" data-class="12">Class 12</button>
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  </div>
+</nav>
+ 
+<main>
+  <!-- STEP 1: UPLOAD -->
+  <section class="home hidden" id="homeSec" aria-labelledby="greet">
+    <div class="hero">
+      <div class="eyebrow">Dashboard</div>
+      <h1 id="greet">Welcome back</h1>
+      <p class="muted">Load a chapter, then let StudyMate summarize it and quiz you step by step.</p>
+    </div>
+    <div class="chips">
+      <div class="chip"><span>Current chapter</span><b id="hChapter">None yet</b></div>
+      <div class="chip"><span>Class</span><b id="hClass">Not set</b></div>
+      <div class="chip"><span>Problems solved</span><b id="hSolved">0</b></div>
+    </div>
+    <h2 class="sect">Start studying</h2>
+    <div class="qgrid">
+      
+      <button class="qcard" data-home="summary"><b>AI Summary</b><span>Get key points, terms and exam tips</span></button>
+      <button class="qcard" data-home="practice"><b>AI Practice</b><span>Solve guided problems with hints</span></button>
+      <button class="qcard" data-home="focus"><b>Focus Timer</b><span>Study in 25-minute focused blocks</span></button>
+      <button class="qcard" data-home="progress"><b>Progress</b><span>Track accuracy and problems solved</span></button>
+    </div>
+  </section>
+ 
+  <section class="dash hidden" id="dashSec" aria-labelledby="dashTitle">
+    <div class="dash-head">
+      <div><div class="eyebrow">Student dashboard</div><h1 id="dashTitle">Today's study plan</h1></div>
+      <div class="streak" id="dStreak">Streak: 0 day(s)</div>
+    </div>
+    <div class="dash-grid">
+      <div class="card dcard">
+        <h2>Today's goal</h2>
+        <div class="muted" id="dGoalText">0 of 5 questions today</div>
+        <div class="bar"><div id="dGoalBar"></div></div>
+        <div class="row">
+          <input type="number" id="dGoalInput" min="1" max="50" value="5" aria-label="Daily goal in questions">
+          <button class="ghost" id="dGoalSave">Save goal</button>
+        </div>
+      </div>
+      <div class="card dcard">
+        <h2>Completed quizzes and average score</h2>
+        <div class="stats">
+          <div class="stat"><b id="dDone">0</b><span>Questions completed</span></div>
+          <div class="stat"><b id="dAvg">0%</b><span>Average score</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin:4px 0 16px"><button id="dContinue">Continue Learning</button></div>
+    <h2 class="sect">Subject-wise progress</h2>
+    <div class="subj-grid" id="dSubjects"></div>
+  </section>
+ 
+  <section class="card auth" id="authSec">
+    <h2 id="authTitle">Sign in to StudyMate</h2>
+    <p class="muted" id="authSub">Pilot version. Accounts and progress are saved in this browser only, so sign in on the same device.</p>
+    <form id="authForm" novalidate>
+      <div id="nameWrap" class="hidden">
+        <label for="authName">Full name</label>
+        <input type="text" id="authName" autocomplete="name" placeholder="Your name">
+      </div>
+      <label for="authEmail">Email</label>
+      <input type="text" id="authEmail" autocomplete="email" placeholder="you@school.edu">
+      <label for="authPass">Password</label>
+      <input type="password" id="authPass" autocomplete="current-password" placeholder="At least 8 characters">
+      <div id="confirmWrap" class="hidden">
+        <label for="authPass2">Confirm password</label>
+        <input type="password" id="authPass2" autocomplete="new-password" placeholder="Re-enter your password">
+      </div>
+      <div class="err" id="authErr" role="alert" style="margin-top:10px;min-height:1.2em"></div>
+      <div class="ok" id="authOk" role="status"></div>
+      <div class="row"><button type="submit" id="authSubmit">Sign in</button></div>
+    </form>
+    <p class="muted center" style="margin-top:14px">
+      <span id="authToggleText">New to StudyMate?</span>
+      <button type="button" class="ghost" id="authToggle">Create an account</button>
+    </p>
+  </section>
+ 
+  <section class="card hidden" id="uploadSec">
+    <h2>Add your chapter notes</h2>
+    <p class="muted">Upload a .txt, .md or .csv file, or paste your notes below. For PDFs or Word files, copy and paste the text.</p>
+    <label for="title">Chapter title</label>
+    <input type="text" id="title" placeholder="e.g. Chapter 4: Photosynthesis">
+    <label for="file">Upload notes file</label>
+    <input type="file" id="file" accept=".txt,.md,.csv" style="width:100%">
+    <label for="notes">Or paste notes</label>
+    <textarea id="notes" placeholder="Paste your chapter notes here..."></textarea>
+    <div class="row">
+      <button id="loadBtn">Load chapter</button>
+      <button class="ghost" id="sampleBtn">Use sample text</button>
+    </div>
+    <div class="status" id="uploadStatus"></div>
+  </section>
+ 
+  <!-- STEP 2: STUDY -->
+  <section id="studySec" class="hidden">
+    <div class="row" style="margin-bottom:12px"><button class="ghost" id="backDash">Back to dashboard</button></div>
+    <nav class="tabs">
+      <button class="tab on" data-tab="summary">AI Summary</button>
+      <button class="tab" data-tab="practice">Practice Quiz</button>
+      <button class="tab" data-tab="focus">Focus Timer</button>
+      <button class="tab" data-tab="progress">Progress</button>
+    </nav>
+ 
+    <!-- SUMMARY -->
+    <section class="card" data-pane="summary">
+      <h2>Chapter summary</h2>
+      <p class="muted">The AI reads your notes and builds a study sheet: key points, key terms and exam tips.</p>
+      <label for="sumNotes">Paste your notes or type a chapter or topic</label>
+      <textarea id="sumNotes" placeholder="Paste notes here, or type a topic such as 'Photosynthesis'..." style="min-height:110px"></textarea>
+      <div class="row"><button id="sumBtn">Generate summary</button></div>
+      <div class="status" id="sumStatus"></div>
+      <div id="sumOut"><div class="empty">Your study sheet will appear here after you generate it.</div></div>
+    </section>
+ 
+    <!-- PRACTICE -->
+    <section class="card hidden" data-pane="practice">
+      <h2>Practice problems</h2>
+      <p class="muted">Solve each problem yourself. Use a hint if you're stuck. The tutor checks your work and guides you without giving the answer away. The full solution unlocks after 3 attempts.</p>
+      <div class="row">
+        <div><label for="qCount">Number of problems</label>
+          <select id="qCount"><option>5</option><option selected>8</option><option>10</option></select></div>
+        <div><label for="qLevel">Difficulty</label>
+          <select id="qLevel"><option>easy</option><option selected>medium</option><option>hard</option></select></div>
+        <div style="align-self:flex-end"><button id="genBtn">Generate problems</button></div>
+      </div>
+      <div class="status" id="qStatus"></div>
+      <div id="qOut" style="margin-top:14px"><div class="empty">Choose a difficulty and generate problems to start practicing.</div></div>
+    </section>
+ 
+    <!-- FOCUS TIMER -->
+    <section class="card hidden" data-pane="focus">
+      <h2>Focus timer (Pomodoro)</h2>
+      <p class="muted">Study in 25-minute focused blocks, then take a 5-minute break.</p>
+      <div class="center"><span class="badge" id="mode">Focus</span></div>
+      <div class="timer" id="clock">25:00</div>
+      <div class="row" style="justify-content:center">
+        <button id="startBtn">Start</button>
+        <button class="ghost" id="resetBtn">Reset</button>
+        <button class="ghost" id="swapBtn">Skip to break</button>
+      </div>
+      <div class="center muted" style="margin-top:12px">Completed focus sessions: <b id="sessions">0</b></div>
+    </section>
+ 
+    <!-- PROGRESS -->
+    <section class="card hidden" data-pane="progress">
+      <h2>Your progress</h2>
+      <div class="stats">
+        <div class="stat"><b id="stAnswered">0</b><span>Problems attempted</span></div>
+        <div class="stat"><b id="stCorrect">0</b><span>Solved correctly</span></div>
+        <div class="stat"><b id="stAcc">0%</b><span>Accuracy</span></div>
+      </div>
+      <div class="bar"><div id="stBar"></div></div>
+      <p class="muted">Tip: revisit problems you got wrong tomorrow. Spacing your practice helps memory far more than cramming.</p>
+    </section>
+  </section>
+  <section class="card hidden" id="notesSec" aria-labelledby="notesTitle">
+    <h2 id="notesTitle">Chapter notes</h2>
+    <div id="notesBody" class="solution"></div>
+    <div class="status" id="notesStatus"></div>
+  </section>
+  <section class="card hidden" id="qaSec" aria-labelledby="qaTitle">
+    <h2 id="qaTitle">Questions and answers</h2>
+    <p class="muted">Questions and model answers for the chapter you selected. Open each answer to check your work.</p>
+    <div id="qaBody"></div>
+    <div class="status" id="qaStatus"></div>
+  </section>
+  <section class="card hidden" id="paperSec" aria-labelledby="paperTitle">
+    <h2 id="paperTitle">Sample paper</h2>
+    <p class="muted">An exam-style paper for the chapter, with sections and marks. Attempt the questions first, then open the model answers.</p>
+    <div id="paperBody"></div>
+    <div class="status" id="paperStatus"></div>
+  </section>
+</main>
+<footer class="site"><span>StudyMate (pilot version)</span><span>Check chapter lists against your school's books before studying. AI features work only inside Claude.</span></footer>
+ 
+<script>
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const MAX_CHARS = 14000;
+let chapter = { title: "", text: "" };
+let questions = [];
+let stats = { answered: 0, correct: 0 };
+ 
+/* ---------- AI via the sample capability ---------- */
+async function ask(prompt) {
+  if (!window.claude || !claude.use) throw new Error("AI is not available in this view. Open the app from claude.ai to use AI features.");
+  const sample = await claude.use("sample");
+  if (!sample) throw new Error("AI features are not available in this view.");
+  const r = await sample(prompt, { cache: false });
+  return r.text;
+}
+function parseJSON(text) {
+  const m = text.match(/[\[{][\s\S]*[\]}]/);
+  if (!m) throw new Error("The AI response could not be read. Please try again.");
+  return JSON.parse(m[0]);
+}
+function setStatus(node, msg, isErr) {
+  node.textContent = msg || "";
+  node.className = "status" + (isErr ? " err" : "");
+}
+ 
+/* ---------- ACCOUNT / SIGN IN ---------- */
+const DAILY_KEY = "studymate_daily";
+let bySub = {}, lastOpen = null, daily = null;
+let mode = "signin", account = null, classLevel = null;
+const ACC_KEY = "studymate_accounts", SESS_KEY = "studymate_session";
+let memAccounts = {};
+function readAccounts() { let saved = {}; try { saved = JSON.parse(localStorage.getItem(ACC_KEY) || "{}"); } catch (e) {} return Object.assign({}, saved, memAccounts); }
+function writeAccounts(a) { memAccounts = Object.assign({}, memAccounts, a); try { localStorage.setItem(ACC_KEY, JSON.stringify(memAccounts)); } catch (e) {} return true; }
+async function hashPass(p) {
+if (!window.crypto || !crypto.subtle) { let h = 2166136261; for (const c of p) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return "fnv" + (h >>> 0).toString(16); }
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(p));
+  return Array.from(new Uint8Array(d)).map(x => x.toString(16).padStart(2, "0")).join("");
+}
+function setMode(m) {
+  mode = m;
+  const su = m === "signup";
+  $("#authTitle").textContent = su ? "Create your StudyMate account" : "Sign in to StudyMate";
+  $("#authSub").textContent = su ? "Pilot version. Accounts and progress are saved in this browser only." : "Pilot version. Accounts and progress are saved in this browser only, so sign in on the same device.";
+  $("#nameWrap").classList.toggle("hidden", !su);
+  $("#confirmWrap").classList.toggle("hidden", !su);
+  $("#authSubmit").textContent = su ? "Create account" : "Sign in";
+  $("#authToggleText").textContent = su ? "Already have an account?" : "New to StudyMate?";
+  $("#authToggle").textContent = su ? "Sign in" : "Create an account";
+  $("#authErr").textContent = "";
+}
+$("#authToggle").addEventListener("click", () => setMode(mode === "signin" ? "signup" : "signin"));
+$("#authForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const name = $("#authName").value.trim();
+  const email = $("#authEmail").value.trim().toLowerCase();
+  const pass = $("#authPass").value;
+  const fail = msg => { $("#authErr").textContent = msg; };
+  $("#authOk").textContent = "";
+  fail("");
+  if (mode === "signup" && name.length < 2) return fail("Please enter your name.");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail("Please enter a valid email address.");
+  if (pass.length < 8) return fail("Password must be at least 8 characters.");
+  if (mode === "signup" && pass !== $("#authPass2").value) return fail("The two passwords do not match. Please re-enter them.");
+  const btn = $("#authSubmit");
+  btn.disabled = true;
+  try {
+    const accounts = readAccounts();
+    const hash = await hashPass(pass);
+    if (mode === "signup") {
+      if (accounts[email]) return fail("An account with this email already exists. Try signing in.");
+      accounts[email] = { name: name, hash: hash };
+      if (!writeAccounts(accounts)) return fail("Accounts cannot be saved in this browser. Please allow site storage or try another browser.");
+      setMode("signin");
+      $("#authEmail").value = email;
+      $("#authPass").value = "";
+      $("#authPass2").value = "";
+      $("#authOk").textContent = "Account created. Please sign in with your email and password.";
+      return;
+    } else {
+      const acc = accounts[email];
+      if (!acc || acc.hash !== hash) return fail("Email or password is incorrect.");
+    }
+    startSession({ email: email, name: accounts[email].name });
+  } catch (x) {
+    fail("Sign-in is not available in this browser. Please try again.");
+  } finally {
+    btn.disabled = false;
+  }
+});
+function startSession(u) {
+  account = u;
+  try { localStorage.setItem(SESS_KEY, JSON.stringify(u)); } catch (e) {}
+  $("#authSec").classList.add("hidden");
+  $("#homeSec").classList.remove("hidden");
+  $("#greet").textContent = "Welcome back, " + u.name.split(" ")[0];
+  renderHome();
+  $("#dashSec").classList.remove("hidden");
+  renderDashboard();
+  $("#profileBtn").classList.remove("hidden");
+  $("#profileBtn").textContent = (u.name || "P").trim().charAt(0).toUpperCase();
+  $("#pmName").textContent = u.name + (u.email ? " (" + u.email + ")" : "");
+  $("#whoami").textContent = "Signed in as " + u.name;
+  updateProfile();
+  $("#signOutBtn").classList.remove("hidden");
+}
+function signOut() {
+  account = null;
+  try { localStorage.removeItem(SESS_KEY); } catch (e) {}
+  chapter = { title: "", text: "" };
+  questions = [];
+  stats = { answered: 0, correct: 0 };
+  $("#chapterName").textContent = "No chapter loaded";
+  $("#whoami").textContent = "";
+  updateProfile();
+  $("#signOutBtn").classList.add("hidden");
+  $("#studySec").classList.add("hidden");
+  $("#dashSec").classList.add("hidden");
+  $("#profileBtn").classList.add("hidden");
+  $("#profileMenu").classList.add("hidden");
+  $("#settingsPanel").classList.add("hidden");
+  $("#profBackdrop").classList.add("hidden");
+  $("#homeSec").classList.add("hidden");
+  $("#uploadSec").classList.add("hidden");
+  $("#authSec").classList.remove("hidden");
+  $("#authForm").reset();
+  $("#authErr").textContent = "";
+  setMode("signin");
+}
+$("#signOutBtn").addEventListener("click", signOut);
+try {
+  const saved = JSON.parse(localStorage.getItem(SESS_KEY) || "null");
+  if (saved && saved.email) document.addEventListener("DOMContentLoaded", () => startSession(saved));
+} catch (e) {}
+setMode("signin");
+ 
+/* ---------- STEP 1: load chapter ---------- */
+$("#file").addEventListener("change", e => {
+  const f = e.target.files[0];
+  if (!f) return;
+  const reader = new FileReader();
+  reader.onload = () => { $("#notes").value = String(reader.result); if (!$("#title").value) $("#title").value = f.name.replace(/\.[^.]+$/, ""); };
+  reader.onerror = () => setStatus($("#uploadStatus"), "Could not read that file.", true);
+  reader.readAsText(f);
+});
+ 
+$("#sampleBtn").addEventListener("click", () => {
+  $("#title").value = "Chapter 1: Cell Biology (sample)";
+  $("#notes").value = "The cell is the basic unit of life. Prokaryotic cells lack a membrane-bound nucleus, while eukaryotic cells have one. Mitochondria produce ATP through cellular respiration, which has three stages: glycolysis, the Krebs cycle and the electron transport chain. Glycolysis takes place in the cytoplasm and produces 2 ATP net per glucose. Osmosis is the diffusion of water across a semi-permeable membrane from a region of low solute concentration to high solute concentration. Cells in a hypotonic solution swell, while cells in a hypertonic solution shrink.";
+});
+ 
+$("#loadBtn").addEventListener("click", () => {
+  const text = $("#notes").value.trim();
+  if (text.length < 80) { setStatus($("#uploadStatus"), "Please add at least a few sentences of notes.", true); return; }
+  chapter = { title: $("#title").value.trim() || "Untitled chapter", text: text.slice(0, MAX_CHARS) };
+  $("#chapterName").textContent = chapter.title;
+  $("#uploadSec").classList.add("hidden");
+  $("#studySec").classList.remove("hidden");
+  setStatus($("#uploadStatus"), text.length > MAX_CHARS ? "Chapter is long, so the first part will be used." : "Chapter loaded. Choose a study tool below.");
+  $("#studySec").scrollIntoView({ behavior: "smooth" });
+});
+ 
+function renderHome() {
+  $("#hChapter").textContent = chapter.title || "None yet";
+  $("#hClass").textContent = classLevel ? "Class " + classLevel + (subject ? " · " + subject : "") : "Not set";
+  $("#hSolved").textContent = stats.correct;
+}
+document.querySelectorAll("[data-home]").forEach(b => b.addEventListener("click", () => go(b.dataset.home)));
+ 
+/* ---------- APPEARANCE (LIGHT / DARK) ---------- */
+function setAppearance(m) {
+  if (m === "system") document.documentElement.removeAttribute("data-mode");
+  else document.documentElement.setAttribute("data-mode", m);
+  try { localStorage.setItem("studymate_mode", m); } catch (e) {}
+  document.querySelectorAll("[data-mode-btn]").forEach(b => b.classList.toggle("active", b.dataset.modeBtn === m));
+}
+document.querySelectorAll("[data-mode-btn]").forEach(b => b.addEventListener("click", () => {
+  setAppearance(b.dataset.modeBtn);
+  toggleNav(false);
+}));
+try {
+  setAppearance(localStorage.getItem("studymate_mode") || "system");
+} catch (e) { setAppearance("system"); }
+ 
+/* ---------- THEMES ---------- */
+function setPalette(p) {
+  const name = p || "classic";
+  if (p) document.documentElement.setAttribute("data-palette", p);
+  else document.documentElement.removeAttribute("data-palette");
+  try { localStorage.setItem("studymate_palette_v2", name); } catch (e) {}
+  document.querySelectorAll("[data-palette-btn]").forEach(b => b.classList.toggle("active", b.dataset.paletteBtn === name));
+}
+document.querySelectorAll("[data-palette-btn]").forEach(b => b.addEventListener("click", () => {
+  const name = b.dataset.paletteBtn;
+  setPalette(name === "classic" ? "" : name);
+  toggleNav(false);
+}));
+try {
+  const savedPalette = localStorage.getItem("studymate_palette_v2") || "academic";
+  setPalette(savedPalette === "classic" ? "" : savedPalette);
+} catch (e) {}
+ 
+/* ---------- CHAPTER SAMPLE PAPER & Q&A ---------- */
+async function openChapterQA(n) {
+  openChapterNotes("Hindi", "Malhar", n, VASANT[n - 1]);
+  const title = VASANT[n - 1];
+  $("#qaTitle").textContent = "Questions and answers: Class " + classLevel + " Hindi (Malhar), chapter " + n + " - " + title;
+  $("#qaBody").innerHTML = "";
+  $("#qaSec").classList.remove("hidden");
+  setStatus($("#qaStatus"), "Creating the sample paper...");
+  $("#qaSec").scrollIntoView({ behavior: "smooth" });
+  try {
+    const data = parseJSON(await ask(
+`You are an experienced Class 6 Hindi teacher in India. Create a sample question paper for the chapter "${title}" from the NCERT Class 6 Hindi textbook Malhar. Do not copy textbook text. Write 6 questions: 2 short-answer, 2 explanation, 1 meaning or vocabulary, and 1 short writing task. Write the questions and model answers in simple Hindi (Devanagari).
+Return ONLY a valid JSON array, with no markdown, in this shape:
+[{"type":"Short answer","question":"...","answer":"..."}]`));
+    data.forEach((q, i) => {
+      const card = el("div", "q");
+      card.appendChild(el("div", "step", q.type || "Question"));
+      card.appendChild(el("div", "qtext", (i + 1) + ". " + q.question));
+      const det = document.createElement("details");
+      const sum = el("summary", "muted", "Show answer");
+      sum.style.cursor = "pointer";
+      det.appendChild(sum);
+      det.appendChild(el("div", "solution", q.answer));
+      card.appendChild(det);
+      $("#qaBody").appendChild(card);
+    });
+    setStatus($("#qaStatus"), "Sample paper ready. The answers are AI-written model answers, so check them against your textbook.");
+  } catch (e) {
+    setStatus($("#qaStatus"), e.message || "Could not create the sample paper. Please try again.", true);
+  }
+}
+ 
+/* ---------- SAMPLE PAPER ---------- */
+async function openSamplePaper(n) {
+  const title = VASANT[n - 1];
+  $("#paperTitle").textContent = "Sample paper: Class 6 Hindi (Vasant), chapter " + n + " - " + title;
+  $("#paperBody").innerHTML = "";
+  $("#paperSec").classList.remove("hidden");
+  setStatus($("#paperStatus"), "Creating the sample paper...");
+  try {
+    const p = parseJSON(await ask(
+`You are an experienced Class 6 Hindi examiner in India. Create an exam-style sample question paper for the chapter "${title}" from the NCERT Class 6 Hindi textbook Vasant. Do not copy textbook text. Use this structure: Section A: 5 very short questions (1 mark each). Section B: 3 short-answer questions (2 marks each). Section C: 2 long-answer questions (4 marks each). Write the questions and answers in simple Hindi (Devanagari). Total marks: 20.
+Return ONLY valid JSON, with no markdown, in this shape:
+{"time":"1 hour","total":20,"sections":[{"name":"Section A","marks_each":1,"questions":[{"q":"...","a":"model answer"}]}]}`));
+    $("#paperBody").appendChild(el("p", "muted", "Time: " + (p.time || "1 hour") + "   |   Maximum marks: " + (p.total || 20)));
+    (p.sections || []).forEach(s => {
+      const marks = s.marks_each || 1;
+      $("#paperBody").appendChild(el("h3", null, s.name + " (" + marks + (marks > 1 ? " marks" : " mark") + " each)"));
+      (s.questions || []).forEach((q, i) => {
+        const card = el("div", "q");
+        card.appendChild(el("div", "qtext", (i + 1) + ". " + q.q));
+        const det = document.createElement("details");
+        const sum = el("summary", "muted", "Show model answer");
+        sum.style.cursor = "pointer";
+        det.appendChild(sum);
+        det.appendChild(el("div", "solution", q.a));
+        card.appendChild(det);
+        $("#paperBody").appendChild(card);
+      });
+    });
+    setStatus($("#paperStatus"), "Sample paper ready. Check the model answers against your textbook.");
+  } catch (e) {
+    setStatus($("#paperStatus"), e.message || "Could not create the sample paper. Please try again.", true);
+  }
+}
+ 
+/* ---------- AI HELP PANEL ---------- */
+const aiFab = $("#aiFab") || document.createElement("button");
+const aiPanel = $("#aiPanel") || document.createElement("div");
+const aiHistory = [];
+function addAiMsg(who, text) {
+  const d = document.createElement("div");
+  d.style.margin = "0 0 10px";
+  d.appendChild(el("b", null, who + ": "));
+  const s = document.createElement("span");
+  s.textContent = text;
+  d.appendChild(s);
+  $("#aiLog").appendChild(d);
+  $("#aiLog").scrollTop = $("#aiLog").scrollHeight;
+  return s;
+}
+aiFab.addEventListener("click", () => {
+  const open = aiPanel.classList.toggle("hidden") === false;
+  aiFab.setAttribute("aria-expanded", String(open));
+});
+($("#aiForm") || document.createElement("form")).addEventListener("submit", async e => {
+  e.preventDefault();
+  const q = $("#aiInput").value.trim();
+  if (!q) return;
+  $("#aiInput").value = "";
+  addAiMsg("You", q);
+  const btn = e.target.querySelector("button");
+  btn.disabled = true;
+  const pending = addAiMsg("AI", "Thinking...");
+  try {
+    aiHistory.push({ role: "user", text: q });
+    const transcript = aiHistory.slice(-12).map(m => (m.role === "user" ? "User" : "Assistant") + ": " + m.text).join("\n");
+    const answer = await ask("You are a helpful, general-purpose AI assistant inside a study app. Help with any request: explanations, homework, writing, planning, coding, translations, and everyday questions. Be clear and accurate, and keep answers concise unless the user asks for detail.\n\nConversation so far:\n" + transcript + "\n\nReply to the last user message as the Assistant. Give only the reply.");
+    aiHistory.push({ role: "assistant", text: answer });
+    pending.textContent = answer;
+  } catch (err) {
+    pending.textContent = err.message || "Could not get an answer. Please try again.";
+  } finally {
+    btn.disabled = false;
+  }
+});
+ 
+/* ---------- DASHBOARD, DAILY GOAL, STREAK, SUBJECT PROGRESS ---------- */
+function dayKey(d) { const x = d || new Date(); return x.getFullYear() + "-" + (x.getMonth() + 1) + "-" + x.getDate(); }
+function yesterdayKey() { const y = new Date(); y.setDate(y.getDate() - 1); return dayKey(y); }
+function loadDaily() {
+  const blank = { goal: 5, day: "", done: 0, streak: 0, lastActive: "" };
+  try { return Object.assign(blank, JSON.parse(localStorage.getItem(DAILY_KEY) || "{}")); } catch (e) { return blank; }
+}
+function saveDaily() { try { localStorage.setItem(DAILY_KEY, JSON.stringify(daily)); } catch (e) {} }
+function touchDaily() {
+  if (!daily) daily = loadDaily();
+  const today = dayKey();
+  if (daily.day !== today) { daily.day = today; daily.done = 0; }
+  if (daily.lastActive !== today) {
+    daily.streak = daily.lastActive === yesterdayKey() ? daily.streak + 1 : 1;
+    daily.lastActive = today;
+  }
+}
+function renderDashboard() {
+  if (!daily) daily = loadDaily();
+  const goal = daily.goal || 5;
+  const today = daily.day === dayKey() ? daily.done : 0;
+  $("#dGoalText").textContent = today + " of " + goal + " questions today";
+  $("#dGoalBar").style.width = Math.min(100, Math.round(today / goal * 100)) + "%";
+  $("#dGoalInput").value = goal;
+  const alive = daily.lastActive === dayKey() || daily.lastActive === yesterdayKey();
+  $("#dStreak").textContent = "Streak: " + (alive ? daily.streak : 0) + " day(s)";
+  $("#dDone").textContent = stats.answered;
+  $("#dAvg").textContent = (stats.answered ? Math.round(stats.correct / stats.answered * 100) : 0) + "%";
+  const wrap = $("#dSubjects");
+  wrap.innerHTML = "";
+  const keys = Object.keys(bySub);
+  if (!keys.length) wrap.appendChild(el("div", "empty", "Solve a few questions to see your subject progress here."));
+  keys.forEach(k => {
+    const v = bySub[k];
+    const card = el("div", "scard");
+    card.appendChild(el("b", null, k));
+    card.appendChild(el("div", "muted", v.a + " attempted, " + v.c + " correct"));
+    const bar = el("div", "bar");
+    const fill = el("div");
+    fill.style.width = Math.round(v.c / Math.max(1, v.a) * 100) + "%";
+    bar.appendChild(fill);
+    card.appendChild(bar);
+    wrap.appendChild(card);
+  });
+}
+$("#dGoalSave").addEventListener("click", () => {
+  if (!daily) daily = loadDaily();
+  daily.goal = Math.max(1, Math.min(50, Number($("#dGoalInput").value) || 5));
+  saveDaily();
+  renderDashboard();
+});
+$("#dContinue").addEventListener("click", () => {
+  if (lastOpen) {
+    openSubjectQA(lastOpen.subj, lastOpen.book, lastOpen.n, lastOpen.title);
+    openSubjectPaper(lastOpen.subj, lastOpen.book, lastOpen.n, lastOpen.title);
+  } else {
+    toggleNav(true);
+  }
+});
+ 
+/* ---------- PROFILE MENU, SETTINGS AND LOG OUT ---------- */
+function closeProfileAll() {
+  $("#profileMenu").classList.add("hidden");
+  $("#settingsPanel").classList.add("hidden");
+  $("#profBackdrop").classList.add("hidden");
+  $("#profileBtn").setAttribute("aria-expanded", "false");
+}
+function toggleProfileMenu(open) {
+  const m = $("#profileMenu");
+  const show = typeof open === "boolean" ? open : m.classList.contains("hidden");
+  m.classList.toggle("hidden", !show);
+  $("#profBackdrop").classList.toggle("hidden", !show);
+  $("#profileBtn").setAttribute("aria-expanded", String(show));
+}
+function openSettings() {
+  if (!account) return;
+  if (!daily) daily = loadDaily();
+  $("#setName").value = account.name || "";
+  $("#setEmail").value = account.email || "";
+  $("#setCurPass").value = "";
+  $("#setNewPass").value = "";
+  $("#setNewPass2").value = "";
+  $("#setMsg").textContent = "";
+  $("#settingsPanel").classList.remove("hidden");
+  $("#profBackdrop").classList.remove("hidden");
+}
+document.addEventListener("DOMContentLoaded", () => {
+$("#profileBtn").addEventListener("click", () => toggleProfileMenu());
+$("#pmSettings").addEventListener("click", () => { toggleProfileMenu(false); openSettings(); });
+$("#pmLogout").addEventListener("click", () => { toggleProfileMenu(false); signOut(); });
+$("#setClose").addEventListener("click", () => closeProfileAll());
+$("#setSave").addEventListener("click", async () => {
+  const msg = $("#setMsg");
+  if (!account) return;
+  const newName = $("#setName").value.trim();
+  const cur = $("#setCurPass").value;
+  const np = $("#setNewPass").value;
+  const np2 = $("#setNewPass2").value;
+  if (newName.length < 2) { msg.textContent = "Please enter a name with at least 2 letters."; return; }
+  const accounts = readAccounts();
+  const rec = accounts[account.email];
+  if (!rec) { msg.textContent = "Account not found. Please sign in again."; return; }
+  if (cur || np || np2) {
+    const curHash = await hashPass(cur);
+    if (curHash !== rec.hash) { msg.textContent = "Current password is incorrect."; return; }
+    if (np.length < 8) { msg.textContent = "New password must be at least 8 characters."; return; }
+    if (np !== np2) { msg.textContent = "The two new passwords do not match."; return; }
+    rec.hash = await hashPass(np);
+  }
+  rec.name = newName;
+  writeAccounts(accounts);
+  account.name = newName;
+  try { localStorage.setItem(SESS_KEY, JSON.stringify(account)); } catch (e) {}
+  $("#whoami").textContent = "Signed in as " + newName;
+  $("#greet").textContent = "Welcome back, " + newName.split(" ")[0];
+  updateProfile();
+  $("#setCurPass").value = "";
+  $("#setNewPass").value = "";
+  $("#setNewPass2").value = "";
+  msg.textContent = "Saved.";
+});
+document.addEventListener("click", e => {
+  const m = $("#profileMenu"), b = $("#profileBtn");
+  if (!m.classList.contains("hidden") && !m.contains(e.target) && !b.contains(e.target)) toggleProfileMenu(false);
+});
+});
+ 
+/* ---------- PROFILE MENU, SETTINGS AND LOG OUT ---------- */
+function updateProfile() {
+  const pn = $("#pmName");
+  if (!pn) return;
+  const name = account ? account.name : "Guest";
+  pn.textContent = name;
+  $("#profileBtn").textContent = (name.charAt(0) || "G").toUpperCase();
+  $("#pmLogout").classList.toggle("hidden", !account);
+}
+ 
+/* ---------- SETTINGS: THEME, APPEARANCE, LOG OUT ---------- */
+document.addEventListener("click", e => {
+  const pal = e.target.closest("[data-set-palette]");
+  if (pal) { const p = pal.dataset.setPalette; setPalette(p === "classic" ? "" : p); return; }
+  const mode = e.target.closest("[data-set-mode]");
+  if (mode) { setAppearance(mode.dataset.setMode); return; }
+  if (e.target.closest("#setLogout")) { $("#settingsPanel").classList.add("hidden"); signOut(); }
+  if (e.target.id === "profBackdrop") closeProfileAll();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeProfileAll(); });
+document.addEventListener("click", e => {
+  if (e.target.closest("#setLogout")) { $("#settingsPanel").classList.add("hidden"); signOut(); }
+  if (e.target.closest("#backDash")) { $("#studySec").classList.add("hidden"); $("#topTitle").classList.remove("hidden"); $("#dashSec").classList.remove("hidden"); window.scrollTo({ top: 0, behavior: "smooth" }); }
+});
+ 
+/* ---------- CHAPTER NOTES ---------- */
+async function openChapterNotes(subj, book, n, title) {
+  $("#notesTitle").textContent = "Chapter notes: Class " + classLevel + " " + subj + " - " + n + ". " + title;
+  $("#notesBody").textContent = "";
+  $("#notesSec").classList.remove("hidden");
+  setStatus($("#notesStatus"), "Creating chapter notes...");
+  try {
+    const text = await ask("You are an experienced " + subj + " teacher in India. Write concise study notes for Class " + classLevel + " students on the chapter \"" + title + "\" from the NCERT book " + book + ". Use these headings: Key points, Important terms, Formulas or rules (only if the subject has them), Exam tips. Use short bullet points starting with a dash. Write in English. Do not copy textbook text.");
+    $("#notesBody").textContent = text;
+    setStatus($("#notesStatus"), "Notes ready. Check them against your textbook.");
+  } catch (e) {
+    setStatus($("#notesStatus"), e.message || "Could not create the notes. Please try again.", true);
+  }
+}
+ 
+/* ---------- NAVIGATION MENU ---------- */
+function toggleNav(open) {
+  const menu = $("#navMenu");
+  const show = typeof open === "boolean" ? open : menu.classList.contains("hidden");
+  menu.classList.toggle("hidden", !show);
+  $("#navBackdrop").classList.toggle("hidden", !show);
+  $("#menuBtn").setAttribute("aria-expanded", String(show));
+}
+function go(target) {
+  toggleNav(false);
+  if (target === "home") { renderHome(); window.scrollTo({ top: 0, behavior: "smooth" }); return; }
+  if (target === "upload") { $("#uploadSec").classList.remove("hidden"); $("#uploadSec").scrollIntoView({ behavior: "smooth" }); return; }
+  if ($("#studySec").classList.contains("hidden")) {
+    $("#studySec").classList.remove("hidden");
+  }
+  $("#topTitle").classList.add("hidden");
+  $("#dashSec").classList.add("hidden");
+  document.querySelector('.tab[data-tab="' + target + '"]').click();
+  $("#studySec").scrollIntoView({ behavior: "smooth" });
+}
+/* ---------- SUBJECTS FOR CLASSES 7 TO 12 ---------- */
+const SUBJECTS = ["Hindi", "English", "Science", "Math", "SST"];
+const SUBJECTS_SENIOR = ["Commerce", "PCM", "PCB", "Arts"];
+[7, 8, 9, 10, 11, 12].forEach(n => {
+  const btn = document.querySelector('#navMenu [data-class="' + n + '"]');
+  if (!btn) return;
+  btn.removeAttribute("data-class");
+  btn.id = "class" + n + "Toggle";
+  btn.setAttribute("aria-expanded", "false");
+  btn.innerHTML = "Class " + n + ' <span class="chev">&#9662;</span>';
+  const list = document.createElement("div");
+  list.className = "classlist hidden";
+  list.dataset.gradeList = String(n);
+  (n >= 11 ? SUBJECTS_SENIOR : SUBJECTS).forEach(s => {
+    const sb = document.createElement("button");
+    sb.className = "navitem";
+    sb.dataset.subject = s;
+    sb.textContent = s;
+    list.appendChild(sb);
+  });
+  btn.insertAdjacentElement("afterend", list);
+  btn.addEventListener("click", () => {
+    const open = list.classList.toggle("hidden") === false;
+    btn.setAttribute("aria-expanded", String(open));
+  });
+});
+$("#hindiToggle").addEventListener("click", () => {
+  const open = $("#hindiChapters").classList.toggle("hidden") === false;
+  $("#hindiToggle").setAttribute("aria-expanded", String(open));
+});
+const VASANT = ["मातृभूमि (कविता)", "गोल (संस्मरण)", "पहली बूँद (कविता)", "हार की जीत (कहानी)", "रहीम के दोहे (दोहे)", "मेरी माँ (आत्मकथा)", "जलाते चलो (कविता)", "सत्रिया और बिहू नृत्य (निबंध)", "मैया मैं नहीं माखन खायो (पद)", "परीक्षा (कहानी)", "चेतक की वीरता (कविता)", "हिंद महासागर में छोटा-सा हिंदुस्तान (यात्रा-वृतांत)", "पेड़ की बात (निबंध)"];
+const VASANT_OLD = ["कलम", "किताब", "घर", "पतंग", "भालू", "झरना", "धनुष", "रुमाल", "कक्षा", "गुब्बारा", "पर्वत", "हमारा घर", "कपड़े की दुकान में", "फूल", "बातचीत", "शिलॉन्ग से फ़ोन", "तितली", "ईश्वरचंद्र विद्यासागर", "प्रदर्शनी", "चिट्ठी", "अंगुलिमाल", "यात्रा की तैयारी", "हाथी", "डॉक्टर", "जयपुर से पत्र", "बढ़े चलो", "व्यर्थ की शंका", "गधा और सियार"];
+VASANT.forEach((t, i) => {
+  const cb = document.createElement("button");
+  cb.className = "navitem";
+  cb.dataset.chapter = String(i + 1);
+  cb.textContent = (i + 1) + ". " + t;
+  $("#hindiChapters").appendChild(cb);
+});
+document.querySelectorAll("[data-chapter]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.chapter);
+  classLevel = 6;
+  subject = "Hindi";
+  chapter = { title: "Class 6 Hindi (Malhar) - Chapter " + n + ": " + VASANT[n - 1], text: "" };
+  toggleNav(false);
+  renderHome();
+  $("#chapterName").textContent = chapter.title;
+  $("#title").value = chapter.title;
+  $("#notes").value = "";
+  $("#uploadSec").classList.remove("hidden");
+  setStatus($("#uploadStatus"), "Paste the text of this chapter from the free NCERT PDF below, then click Load chapter.");
+  openChapterQA(n);
+  openSubjectPaper("Hindi", "Malhar", n, VASANT[n - 1], "Hindi (Devanagari)");
+}));
+$("#englishToggle").addEventListener("click", () => {
+  const open = $("#englishChapters").classList.toggle("hidden") === false;
+  $("#englishToggle").setAttribute("aria-expanded", String(open));
+});
+const POORVI = ["A Bottle of Dew", "The Raven and the Fox", "Rama to the Rescue", "The Unlikely Best Friends", "A Friend's Prayer", "The Chair", "Neem Baba", "What a Bird Thought", "Spices That Heal Us", "Change of Heart", "The Winner", "Yoga - A Way of Life", "Hamara Bharat—Incredible India!", "The Kites", "Ila Sachani", "National War Memorial"];
+POORVI.forEach((t, i) => {
+  const cb = document.createElement("button");
+  cb.className = "navitem";
+  cb.dataset.echapter = String(i + 1);
+  cb.textContent = (i + 1) + ". " + t;
+  $("#englishChapters").appendChild(cb);
+});
+function addItemCards(items) {
+  items.forEach((q, i) => {
+    const card = el("div", "q");
+    if (q.type) card.appendChild(el("div", "step", q.type));
+    card.appendChild(el("div", "qtext", (i + 1) + ". " + q.question));
+    const det = document.createElement("details");
+    const sum = el("summary", "muted", "Show answer");
+    sum.style.cursor = "pointer";
+    det.appendChild(sum);
+    det.appendChild(el("div", "solution", q.answer));
+    card.appendChild(det);
+    $("#qaBody").appendChild(card);
+  });
+}
+async function openSubjectQA(subj, book, n, title) {
+  lastOpen = { subj: subj, book: book, n: n, title: title };
+  openChapterNotes(subj, book, n, title);
+  $("#qaTitle").textContent = "Questions and answers: Class " + classLevel + " " + subj + " (" + book + "), chapter " + n + " - " + title;
+  $("#qaBody").innerHTML = "";
+  $("#qaSec").classList.remove("hidden");
+  setStatus($("#qaStatus"), "Creating questions and answers...");
+  $("#qaSec").scrollIntoView({ behavior: "smooth" });
+  try {
+    const data = parseJSON(await ask(
+`You are an experienced Class ${classLevel} ${subj} teacher in India. Create 6 exercise-style questions with model answers for the chapter "${title}" from the NCERT Class ${classLevel} ${subj} textbook ${book}. Do not copy textbook text. Include comprehension, vocabulary and grammar questions. Write in English.
+Return ONLY a valid JSON array, with no markdown, in this shape:
+[{"type":"Comprehension","question":"...","answer":"..."}]`));
+    addItemCards(data);
+    setStatus($("#qaStatus"), "Questions ready. The answers are AI-written model answers, so check them against your textbook.");
+  } catch (e) {
+    setStatus($("#qaStatus"), e.message || "Could not create questions. Please try again.", true);
+  }
+}
+async function openSubjectPaper(subj, book, n, title, lang) {
+  const language = lang || "English";
+  $("#paperTitle").textContent = "Sample paper: Class " + classLevel + " " + subj + " (" + book + "), chapter " + n + " - " + title;
+  $("#paperBody").innerHTML = "";
+  $("#paperSec").classList.remove("hidden");
+  $("#paperBody").appendChild(el("p", "muted", "Time: 1 hour   |   Maximum marks: 20"));
+  setStatus($("#paperStatus"), "Creating the sample paper...");
+  const plan = [
+    { name: "Section A", marks: 1, count: 5, kind: "very short questions" },
+    { name: "Section B", marks: 2, count: 3, kind: "short-answer questions" },
+    { name: "Section C", marks: 4, count: 2, kind: "long-answer questions" }
+  ];
+  const holders = plan.map(s => {
+    const h = el("div");
+    h.appendChild(el("h3", null, s.name + " (" + s.marks + (s.marks > 1 ? " marks" : " mark") + " each)"));
+    h.appendChild(el("p", "muted", "Creating " + s.count + " " + s.kind + "..."));
+    $("#paperBody").appendChild(h);
+    return h;
+  });
+  let failed = 0;
+  await Promise.all(plan.map(async (s, idx) => {
+    const holder = holders[idx];
+    try {
+      const qs = parseJSON(await ask(
+`You are an experienced Class ${classLevel} ${subj} examiner in India. Write exactly ${s.count} ${s.kind} worth ${s.marks} mark${s.marks > 1 ? "s" : ""} each, for the chapter "${title}" from the NCERT Class ${classLevel} ${subj} textbook ${book}. Do not copy textbook text. Write in ${language}. Keep each model answer to 1 to 3 sentences.
+Return ONLY a valid JSON array, with no markdown, in this shape:
+[{"q":"question text","a":"model answer"}]`));
+      holder.innerHTML = "";
+      holder.appendChild(el("h3", null, s.name + " (" + s.marks + (s.marks > 1 ? " marks" : " mark") + " each)"));
+      qs.slice(0, s.count).forEach((x, i) => {
+        const card = el("div", "q");
+        card.appendChild(el("div", "qtext", (i + 1) + ". " + x.q));
+        const det = document.createElement("details");
+        const sum = el("summary", "muted", "Show model answer");
+        sum.style.cursor = "pointer";
+        det.appendChild(sum);
+        det.appendChild(el("div", "solution", x.a));
+        card.appendChild(det);
+        holder.appendChild(card);
+      });
+    } catch (e) {
+      failed++;
+      holder.innerHTML = "";
+      holder.appendChild(el("h3", null, s.name));
+      holder.appendChild(el("p", "err", "This section could not be created. Please try again."));
+    }
+  }));
+  setStatus($("#paperStatus"), failed ? "Some sections could not be created. Please try again." : "Sample paper complete. Check the model answers against your textbook.", failed > 0);
+}
+async function openSubjectPaperOld(subj, book, n, title) {
+  $("#paperTitle").textContent = "Sample paper: Class " + classLevel + " " + subj + " (" + book + "), chapter " + n + " - " + title;
+  $("#paperBody").innerHTML = "";
+  $("#paperSec").classList.remove("hidden");
+  setStatus($("#paperStatus"), "Creating the sample paper...");
+  try {
+    const p = parseJSON(await ask(
+`You are an experienced Class ${classLevel} ${subj} examiner in India. Create an exam-style sample question paper for the chapter "${title}" from the NCERT Class ${classLevel} ${subj} textbook ${book}. Do not copy textbook text. Section A: 5 very short questions (1 mark each). Section B: 3 short-answer questions (2 marks each). Section C: 2 long-answer questions (4 marks each). Write in English. Total marks: 20.
+Return ONLY valid JSON, with no markdown, in this shape:
+{"time":"1 hour","total":20,"sections":[{"name":"Section A","marks_each":1,"questions":[{"q":"...","a":"model answer"}]}]}`));
+    $("#paperBody").appendChild(el("p", "muted", "Time: " + (p.time || "1 hour") + "   |   Maximum marks: " + (p.total || 20)));
+    (p.sections || []).forEach(s => {
+      const marks = s.marks_each || 1;
+      $("#paperBody").appendChild(el("h3", null, s.name + " (" + marks + (marks > 1 ? " marks" : " mark") + " each)"));
+      addItemCards((s.questions || []).map(x => ({ question: x.q, answer: x.a })));
+    });
+    setStatus($("#paperStatus"), "Sample paper ready. Check the model answers against your textbook.");
+  } catch (e) {
+    setStatus($("#paperStatus"), e.message || "Could not create the sample paper. Please try again.", true);
+  }
+}
+document.querySelectorAll("[data-echapter]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.echapter);
+  classLevel = 6;
+  subject = "English";
+  toggleNav(false);
+  renderHome();
+  openSubjectQA("English", "Poorvi", n, POORVI[n - 1]);
+  openSubjectPaper("English", "Poorvi", n, POORVI[n - 1]);
+}));
+$("#mathToggle").addEventListener("click", () => {
+  const open = $("#mathChapters").classList.toggle("hidden") === false;
+  $("#mathToggle").setAttribute("aria-expanded", String(open));
+});
+const GANIT = ["Patterns in Mathematics", "Lines and Angles", "Number Play", "Data Handling and Presentation", "Prime Time", "Perimeter and Area", "Fractions", "Playing with Constructions", "Symmetry", "The Other Side of Zero"];
+GANIT.forEach((t, i) => {
+  const cb = document.createElement("button");
+  cb.className = "navitem";
+  cb.dataset.mchapter = String(i + 1);
+  cb.textContent = (i + 1) + ". " + t;
+  $("#mathChapters").appendChild(cb);
+});
+document.querySelectorAll("[data-mchapter]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.mchapter);
+  classLevel = 6;
+  subject = "Math";
+  toggleNav(false);
+  renderHome();
+  openSubjectQA("Math", "Ganit Prakash", n, GANIT[n - 1]);
+  openSubjectPaper("Math", "Ganit Prakash", n, GANIT[n - 1]);
+}));
+$("#scienceToggle").addEventListener("click", () => {
+  const open = $("#scienceChapters").classList.toggle("hidden") === false;
+  $("#scienceToggle").setAttribute("aria-expanded", String(open));
+});
+$("#sstToggle").addEventListener("click", () => {
+  const open = $("#sstChapters").classList.toggle("hidden") === false;
+  $("#sstToggle").setAttribute("aria-expanded", String(open));
+});
+const CURIOSITY = ["The Wonderful World of Science", "Diversity in the Living World", "Mindful Eating: A Path to a Healthy Body", "Exploring Magnets", "Measurement of Length and Motion", "Materials Around Us", "Temperature and its Measurement", "A Journey Through States of Water", "Methods of Separation in Everyday Life", "Living Creatures: Exploring their Characteristics", "Nature's Treasures", "Beyond Earth"];
+CURIOSITY.forEach((t, i) => {
+  const cb = document.createElement("button");
+  cb.className = "navitem";
+  cb.dataset.schapter = String(i + 1);
+  cb.textContent = (i + 1) + ". " + t;
+  $("#scienceChapters").appendChild(cb);
+});
+const SST_CH = [[1, "Locating Places on the Earth"], [2, "Oceans and Continents"], [3, "Landforms and Life"], [4, "Timeline and Sources of History"], [5, "India, That Is Bharat"], [6, "The Beginnings of Indian Civilisation"], [7, "India's Cultural Roots"], [8, "Unity in Diversity, or 'Many in the One'"], [9, "Family and Community"], [10, "Grassroots Democracy – Part 1: Governance"], [11, "Grassroots Democracy – Part 2: Local Government in Rural Areas"], [12, "Grassroots Democracy – Part 3: Local Government in Urban Areas"], [13, "The Value of Work"], [14, "Economic Activities Around Us"]];
+SST_CH.forEach(([num, t]) => {
+  const cb = document.createElement("button");
+  cb.className = "navitem";
+  cb.dataset.sstchapter = String(num);
+  cb.textContent = num + ". " + t;
+  $("#sstChapters").appendChild(cb);
+});
+document.querySelectorAll("[data-schapter]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.schapter);
+  classLevel = 6;
+  subject = "Science";
+  toggleNav(false);
+  renderHome();
+  openSubjectQA("Science", "Curiosity", n, CURIOSITY[n - 1]);
+  openSubjectPaper("Science", "Curiosity", n, CURIOSITY[n - 1]);
+}));
+document.querySelectorAll("[data-sstchapter]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.sstchapter);
+  const title = SST_CH.find(x => x[0] === n)[1];
+  classLevel = 6;
+  subject = "SST";
+  toggleNav(false);
+  renderHome();
+  openSubjectQA("Social Science", "Exploring Society: India and Beyond", n, title);
+  openSubjectPaper("Social Science", "Exploring Society: India and Beyond", n, title);
+}));
+/* ---------- CLASS 7 HINDI (MALHAR) CHAPTERS ---------- */
+const MALHAR = ["माँ, कह एक कहानी", "तीन बुद्धिमान", "फूल और काँटा", "पानी रे पानी", "नहीं होना बीमार", "गिरिधर कविराय की कुंडलियाँ", "वर्षा-बहार", "बिरजू महाराज से साक्षात्कार", "चिड़िया", "मीरा के पद"];
+const hindi7 = document.querySelector('[data-grade-list="7"] [data-subject="Hindi"]');
+if (hindi7) {
+  hindi7.removeAttribute("data-subject");
+  hindi7.id = "hindi7Toggle";
+  hindi7.setAttribute("aria-expanded", "false");
+  hindi7.innerHTML = 'Hindi <span class="chev">&#9662;</span>';
+  const hl = document.createElement("div");
+  hl.className = "classlist hidden";
+  hl.id = "hindi7Chapters";
+  MALHAR.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.malhar = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    hl.appendChild(cb);
+  });
+  hindi7.insertAdjacentElement("afterend", hl);
+  hindi7.addEventListener("click", () => {
+    const open = hl.classList.toggle("hidden") === false;
+    hindi7.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-malhar]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.malhar);
+  classLevel = 7;
+  subject = "Hindi";
+  toggleNav(false);
+  renderHome();
+  openSubjectQA("Hindi", "Malhar", n, MALHAR[n - 1]);
+  openSubjectPaper("Hindi", "Malhar", n, MALHAR[n - 1]);
+}));
+/* ---------- CLASS 7 ENGLISH (POORVI) CHAPTERS ---------- */
+const POORVI7 = ["The Day the River Spoke", "Try Again", "Three Days to See", "Animals Birds and Dr. Dolittle", "A Funny Man", "Say the Right Thing", "My Brother's Great Invention", "Paper Boats", "North South East West", "The Tunnel", "Travel", "Conquering the Summit", "A Homage to Our Brave Soldiers", "My Dear Soldiers", "Rani Abbakka"];
+const english7 = document.querySelector('[data-grade-list="7"] [data-subject="English"]');
+if (english7) {
+  english7.removeAttribute("data-subject");
+  english7.id = "english7Toggle";
+  english7.setAttribute("aria-expanded", "false");
+  english7.innerHTML = 'English <span class="chev">&#9662;</span>';
+  const el7 = document.createElement("div");
+  el7.className = "classlist hidden";
+  el7.id = "english7Chapters";
+  POORVI7.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.poorvi7 = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    el7.appendChild(cb);
+  });
+  english7.insertAdjacentElement("afterend", el7);
+  english7.addEventListener("click", () => {
+    const open = el7.classList.toggle("hidden") === false;
+    english7.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-poorvi7]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.poorvi7);
+  classLevel = 7;
+  subject = "English";
+  toggleNav(false);
+  renderHome();
+  openSubjectQA("English", "Poorvi", n, POORVI7[n - 1]);
+  openSubjectPaper("English", "Poorvi", n, POORVI7[n - 1]);
+}));
+/* ---------- CLASS 7 MATH (GANITA PRAKASH) CHAPTERS ---------- */
+const GANITA7 = ["Large Numbers Around Us", "Arithmetic Expressions", "A Peek Beyond the Point", "Expressions using Letter-Numbers", "Parallel and Intersecting Lines", "Number Play", "A Tale of Three Intersecting Lines", "Working with Fractions", "Geometric Twins (Congruence)", "Operations with Integers", "Finding Common Ground (HCF/LCM)", "Another Peek Beyond the Point (Decimals)", "Connecting the Dots (Central Tendency)", "Constructions and Tilings", "Finding the Unknown (Algebra)"];
+const math7 = document.querySelector('[data-grade-list="7"] [data-subject="Math"]');
+if (math7) {
+  math7.removeAttribute("data-subject");
+  math7.id = "math7Toggle";
+  math7.setAttribute("aria-expanded", "false");
+  math7.innerHTML = 'Math <span class="chev">&#9662;</span>';
+  const ml7 = document.createElement("div");
+  ml7.className = "classlist hidden";
+  ml7.id = "math7Chapters";
+  GANITA7.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.ganita7 = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    ml7.appendChild(cb);
+  });
+  math7.insertAdjacentElement("afterend", ml7);
+  math7.addEventListener("click", () => {
+    const open = ml7.classList.toggle("hidden") === false;
+    math7.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-ganita7]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.ganita7);
+  classLevel = 7;
+  subject = "Math";
+  toggleNav(false);
+  renderHome();
+  openSubjectQA("Math", "Ganita Prakash", n, GANITA7[n - 1]);
+  openSubjectPaper("Math", "Ganita Prakash", n, GANITA7[n - 1]);
+}));
+/* ---------- CLASS 7 SCIENCE (CURIOSITY) CHAPTERS ---------- */
+const CURIOSITY7 = ["The Ever-Evolving World of Science", "Exploring Substances: Acidic, Basic, and Neutral", "Electricity: Circuits and their Components", "The World of Metals and Non-metals", "Changes Around Us: Physical and Chemical", "Adolescence: A Stage of Growth and Change", "Heat Transfer in Nature", "Measurement of Time and Motion", "Life Processes in Animals", "Life Processes in Plants", "Light: Shadows and Reflections", "Earth, Moon, and the Sun"];
+const sci7 = document.querySelector('[data-grade-list="7"] [data-subject="Science"]');
+if (sci7) {
+  sci7.removeAttribute("data-subject");
+  sci7.id = "sci7Toggle";
+  sci7.setAttribute("aria-expanded", "false");
+  sci7.innerHTML = 'Science <span class="chev">&#9662;</span>';
+  const sl7 = document.createElement("div");
+  sl7.className = "classlist hidden";
+  sl7.id = "sci7Chapters";
+  CURIOSITY7.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.curi7 = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    sl7.appendChild(cb);
+  });
+  sci7.insertAdjacentElement("afterend", sl7);
+  sci7.addEventListener("click", () => {
+    const open = sl7.classList.toggle("hidden") === false;
+    sci7.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-curi7]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.curi7);
+  classLevel = 7;
+  subject = "Science";
+  toggleNav(false);
+  renderHome();
+  openSubjectQA("Science", "Curiosity", n, CURIOSITY7[n - 1]);
+  openSubjectPaper("Science", "Curiosity", n, CURIOSITY7[n - 1]);
+}));
+/* ---------- CLASS 7 SST (EXPLORING SOCIETY) CHAPTERS ---------- */
+const SST7 = [
+  { p: 1, n: 1, t: "Geographical Diversity of India" },
+  { p: 1, n: 2, t: "Understanding the Weather" },
+  { p: 1, n: 3, t: "Climates of India" },
+  { p: 1, n: 4, t: "New Beginnings: Cities and States" },
+  { p: 1, n: 5, t: "The Rise of Empires" },
+  { p: 1, n: 6, t: "The Age of Reorganisation" },
+  { p: 1, n: 7, t: "The Gupta Era: An Age of Tireless Creativity" },
+  { p: 1, n: 8, t: "How the Land Becomes Sacred" },
+  { p: 1, n: 9, t: "From the Rulers to the Ruled: Types of Governments" },
+  { p: 1, n: 10, t: "The Constitution of India: An Introduction" },
+  { p: 1, n: 11, t: "From Barter to Money" },
+  { p: 1, n: 12, t: "Understanding Markets" },
+  { p: 2, n: 13, t: "The Story of Indian Farming" },
+  { p: 2, n: 14, t: "India and Her Neighbours" },
+  { p: 2, n: 15, t: "Empires and Kingdoms: 6th to 10th Centuries" },
+  { p: 2, n: 16, t: "Turning Tides: 11th and 12th Centuries" },
+  { p: 2, n: 17, t: "India, a Home to Many" },
+  { p: 2, n: 18, t: "The State, the Government, and You" },
+  { p: 2, n: 19, t: "Infrastructure: Engine of India's Development" },
+  { p: 2, n: 20, t: "Banks and the Magic of Finance" }
+];
+const sst7 = document.querySelector('[data-grade-list="7"] [data-subject="SST"]');
+if (sst7) {
+  sst7.removeAttribute("data-subject");
+  sst7.id = "sst7Toggle";
+  sst7.setAttribute("aria-expanded", "false");
+  sst7.innerHTML = 'SST <span class="chev">&#9662;</span>';
+  const sl = document.createElement("div");
+  sl.className = "classlist hidden";
+  sl.id = "sst7Chapters";
+  SST7.forEach(c => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.sst7 = c.p + "-" + c.n;
+    cb.textContent = "Part " + c.p + " - " + c.n + ". " + c.t;
+    sl.appendChild(cb);
+  });
+  sst7.insertAdjacentElement("afterend", sl);
+  sst7.addEventListener("click", () => {
+    const open = sl.classList.toggle("hidden") === false;
+    sst7.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-sst7]").forEach(b => b.addEventListener("click", () => {
+  const parts = b.dataset.sst7.split("-").map(Number);
+  const item = SST7.find(c => c.p === parts[0] && c.n === parts[1]);
+  const book = "Exploring Society: India and Beyond Part " + parts[0];
+  classLevel = 7;
+  subject = "SST";
+  toggleNav(false);
+  renderHome();
+  openSubjectQA("Social Science", book, parts[1], item.t);
+  openSubjectPaper("Social Science", book, parts[1], item.t);
+}));
+/* ---------- CLASS 8 HINDI (MALHAR) CHAPTERS ---------- */
+const MALHAR8 = ["स्वदेश", "दो गौरैया", "एक आशीर्वाद", "हरिद्वार", "कबीर के दोहे", "एक टोकरी भर मिट्टी", "मत बाँधो", "नए मेहमान", "आदमी का अनुपात", "तरुण के स्वप्न"];
+const hindi8 = document.querySelector('[data-grade-list="8"] [data-subject="Hindi"]');
+if (hindi8) {
+  hindi8.removeAttribute("data-subject");
+  hindi8.id = "hindi8Toggle";
+  hindi8.setAttribute("aria-expanded", "false");
+  hindi8.innerHTML = 'Hindi <span class="chev">&#9662;</span>';
+  const hl8 = document.createElement("div");
+  hl8.className = "classlist hidden";
+  hl8.id = "hindi8Chapters";
+  MALHAR8.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.malhar8 = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    hl8.appendChild(cb);
+  });
+  hindi8.insertAdjacentElement("afterend", hl8);
+  hindi8.addEventListener("click", () => {
+    const open = hl8.classList.toggle("hidden") === false;
+    hindi8.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-malhar8]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.malhar8);
+  classLevel = 8;
+  subject = "Hindi";
+  toggleNav(false);
+  renderHome();
+  openSubjectQA("Hindi", "Malhar", n, MALHAR8[n - 1]);
+  openSubjectPaper("Hindi", "Malhar", n, MALHAR8[n - 1]);
+}));
+/* ---------- CLASS 8 ENGLISH (POORVI) CHAPTERS ---------- */
+const POORVI8 = ["The Wit that Won Hearts", "A Concrete Example", "Wisdom Paves the Way", "A Tale of Valour: Major Somnath Sharma and the Battle of Badgam", "Somebody's Mother", "Verghese Kurien – I Too Had a Dream", "The Case of the Fifth Word", "The Magic Brush of Dreams", "Spectacular Wonders", "The Cherry Tree", "Harvest Hymn", "Waiting for the Rain", "Feathered Friend", "Magnifying Glass", "Bibha Chowdhuri: The Beam of Light that Lit the Path for Women in Indian Science"];
+const english8 = document.querySelector('[data-grade-list="8"] [data-subject="English"]');
+if (english8) {
+  english8.removeAttribute("data-subject");
+  english8.id = "english8Toggle";
+  english8.setAttribute("aria-expanded", "false");
+  english8.innerHTML = 'English <span class="chev">&#9662;</span>';
+  const el8 = document.createElement("div");
+  el8.className = "classlist hidden";
+  el8.id = "english8Chapters";
+  POORVI8.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.poorvi8 = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    el8.appendChild(cb);
+  });
+  english8.insertAdjacentElement("afterend", el8);
+  english8.addEventListener("click", () => {
+    const open = el8.classList.toggle("hidden") === false;
+    english8.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-poorvi8]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.poorvi8);
+  classLevel = 8;
+  subject = "English";
+  toggleNav(false);
+  renderHome();
+  openSubjectQA("English", "Poorvi", n, POORVI8[n - 1]);
+  openSubjectPaper("English", "Poorvi", n, POORVI8[n - 1]);
+}));
+/* ---------- CLASS 8 MATH (GANITA PRAKASH) CHAPTERS ---------- */
+const GANITA8 = ["A Square and A Cube", "Power Play", "A Story of Numbers", "Quadrilaterals", "Number Play", "We Distribute, Yet Things Multiply", "Proportional Reasoning – 1", "Fractions in Disguise", "The Baudhayana-Pythagoras Theorem", "Proportional Reasoning – 2", "Exploring Some Geometric Themes", "Tales by Dots and Lines", "Algebra Play", "Area"];
+const math8 = document.querySelector('[data-grade-list="8"] [data-subject="Math"]');
+if (math8) {
+  math8.removeAttribute("data-subject");
+  math8.id = "math8Toggle";
+  math8.setAttribute("aria-expanded", "false");
+  math8.innerHTML = 'Math <span class="chev">&#9662;</span>';
+  const ml8 = document.createElement("div");
+  ml8.className = "classlist hidden";
+  ml8.id = "math8Chapters";
+  GANITA8.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.ganita8 = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    ml8.appendChild(cb);
+  });
+  math8.insertAdjacentElement("afterend", ml8);
+  math8.addEventListener("click", () => {
+    const open = ml8.classList.toggle("hidden") === false;
+    math8.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-ganita8]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.ganita8);
+  classLevel = 8;
+  subject = "Math";
+  toggleNav(false);
+  renderHome();
+  openSubjectQA("Math", "Ganita Prakash", n, GANITA8[n - 1]);
+  openSubjectPaper("Math", "Ganita Prakash", n, GANITA8[n - 1]);
+}));
+/* ---------- CLASS 8 SCIENCE (CURIOSITY) CHAPTERS ---------- */
+const CURIOSITY8 = ["Exploring the Investigative World of Science", "The Invisible Living World: Beyond Our Naked Eye", "Health: The Ultimate Treasure", "Electricity: Magnetic and Heating Effects", "Exploring Forces", "Pressure, Winds, Storms, and Cyclones", "Particulate Nature of Matter", "Nature of Matter: Elements, Compounds, and Mixtures", "The Amazing World of Solutes, Solvents, and Solutions", "Light: Mirrors and Lenses", "Keeping Time with the Skies", "How Nature Works in Harmony", "Our Home: Earth, a Unique Life Sustaining Planet"];
+const sci8 = document.querySelector('[data-grade-list="8"] [data-subject="Science"]');
+if (sci8) {
+  sci8.removeAttribute("data-subject");
+  sci8.id = "sci8Toggle";
+  sci8.setAttribute("aria-expanded", "false");
+  sci8.innerHTML = 'Science <span class="chev">&#9662;</span>';
+  const sl8 = document.createElement("div");
+  sl8.className = "classlist hidden";
+  sl8.id = "sci8Chapters";
+  CURIOSITY8.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.curi8 = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    sl8.appendChild(cb);
+  });
+  sci8.insertAdjacentElement("afterend", sl8);
+  sci8.addEventListener("click", () => {
+    const open = sl8.classList.toggle("hidden") === false;
+    sci8.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-curi8]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.curi8);
+  classLevel = 8;
+  subject = "Science";
+  toggleNav(false);
+  renderHome();
+  openSubjectQA("Science", "Curiosity", n, CURIOSITY8[n - 1]);
+  openSubjectPaper("Science", "Curiosity", n, CURIOSITY8[n - 1]);
+}));
+/* ---------- CLASS 8 SST (EXPLORING SOCIETY) CHAPTERS ---------- */
+const SST8 = [
+  { p: 1, n: 1, t: "Natural Resources and Their Use" },
+  { p: 1, n: 2, t: "Reshaping India's Political Map" },
+  { p: 1, n: 3, t: "The Rise of the Marathas" },
+  { p: 1, n: 4, t: "The Colonial Era in India" },
+  { p: 1, n: 5, t: "Universal Franchise and India's Electoral System" },
+  { p: 1, n: 6, t: "The Parliamentary System: Legislature and Executive" },
+  { p: 1, n: 7, t: "Factors of Production" },
+  { p: 2, n: 1, t: "World Geography: Some Glimpses" },
+  { p: 2, n: 2, t: "India's Long Road to Independence" },
+  { p: 2, n: 3, t: "A Journey Through Indian Architecture" },
+  { p: 2, n: 4, t: "The Role of the Judiciary in Our Society (withdrawn by NCERT for revision; check your school's edition)" },
+  { p: 2, n: 5, t: "Citizenship: Rights and Duties" },
+  { p: 2, n: 6, t: "Dynamics of Population" },
+  { p: 2, n: 7, t: "India's Urban Landscape" },
+  { p: 2, n: 8, t: "Cultural Currents: 13th to 17th Centuries" }
+];
+const sst8 = document.querySelector('[data-grade-list="8"] [data-subject="SST"]');
+if (sst8) {
+  sst8.removeAttribute("data-subject");
+  sst8.id = "sst8Toggle";
+  sst8.setAttribute("aria-expanded", "false");
+  sst8.innerHTML = 'SST <span class="chev">&#9662;</span>';
+  const sl8s = document.createElement("div");
+  sl8s.className = "classlist hidden";
+  sl8s.id = "sst8Chapters";
+  SST8.forEach(c => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.sst8 = c.p + "-" + c.n;
+    cb.textContent = "Part " + (c.p === 1 ? "I" : "II") + " - " + c.n + ". " + c.t;
+    sl8s.appendChild(cb);
+  });
+  sst8.insertAdjacentElement("afterend", sl8s);
+  sst8.addEventListener("click", () => {
+    const open = sl8s.classList.toggle("hidden") === false;
+    sst8.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-sst8]").forEach(b => b.addEventListener("click", () => {
+  const parts = b.dataset.sst8.split("-").map(Number);
+  const item = SST8.find(c => c.p === parts[0] && c.n === parts[1]);
+  const book = "Exploring Society: India and Beyond Part " + (parts[0] === 1 ? "I" : "II");
+  classLevel = 8;
+  subject = "SST";
+  toggleNav(false);
+  renderHome();
+  openSubjectQA("Social Science", book, parts[1], item.t);
+  openSubjectPaper("Social Science", book, parts[1], item.t);
+}));
+/* ---------- CLASS 9 HINDI (GANGA) CHAPTERS ---------- */
+const GANGA9 = ["दो बैलों की कथा", "क्या लिखूँ?", "संवादहीन", "ऐसी भी बातें होती हैं", "आखिरी चट्टान तक", "रीढ़ की हड्डी", "मैं और मेरा देश", "पद", "राम-लक्ष्मण-परशुराम संवाद", "भारति, जय, विजयकरे!", "झाँसी की रानी", "घर की याद"];
+const hindi9 = document.querySelector('[data-grade-list="9"] [data-subject="Hindi"]');
+if (hindi9) {
+  hindi9.removeAttribute("data-subject");
+  hindi9.id = "hindi9Toggle";
+  hindi9.setAttribute("aria-expanded", "false");
+  hindi9.innerHTML = 'Hindi <span class="chev">&#9662;</span>';
+  const hl9 = document.createElement("div");
+  hl9.className = "classlist hidden";
+  hl9.id = "hindi9Chapters";
+  GANGA9.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.ganga9 = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    hl9.appendChild(cb);
+  });
+  hindi9.insertAdjacentElement("afterend", hl9);
+  hindi9.addEventListener("click", () => {
+    const open = hl9.classList.toggle("hidden") === false;
+    hindi9.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-ganga9]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.ganga9);
+  classLevel = 9;
+  subject = "Hindi";
+  toggleNav(false);
+  openSubjectQA("Hindi", "Ganga", n, GANGA9[n - 1]);
+  openSubjectPaper("Hindi", "Ganga", n, GANGA9[n - 1]);
+}));
+/* ---------- CLASS 9 ENGLISH (MOMENTS) CHAPTERS ---------- */
+const MOMENTS9 = ["How I Taught My Grandmother to Read; Bharat Our Land", "The Pot Maker; Gifts of Grace: Honouring Our Vocations", "Winds of Change; Canvas of Soil", "Vitamin-M; I Cannot Remember My Mother", "The World of Limitless Possibilities; Nine Gold Medals", "Twin Melodies; A Friend Found in Music", "Carrier of Words; Words", "Follow That Dream; Believe in Yourself"];
+const english9 = document.querySelector('[data-grade-list="9"] [data-subject="English"]');
+if (english9) {
+  english9.removeAttribute("data-subject");
+  english9.id = "english9Toggle";
+  english9.setAttribute("aria-expanded", "false");
+  english9.innerHTML = 'English <span class="chev">&#9662;</span>';
+  const el9 = document.createElement("div");
+  el9.className = "classlist hidden";
+  el9.id = "english9Chapters";
+  MOMENTS9.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.moments9 = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    el9.appendChild(cb);
+  });
+  english9.insertAdjacentElement("afterend", el9);
+  english9.addEventListener("click", () => {
+    const open = el9.classList.toggle("hidden") === false;
+    english9.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-moments9]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.moments9);
+  classLevel = 9;
+  subject = "English";
+  toggleNav(false);
+  openSubjectQA("English", "Kaveri", n, MOMENTS9[n - 1]);
+  openSubjectPaper("English", "Kaveri", n, MOMENTS9[n - 1]);
+}));
+/* ---------- CLASS 9 MATH, SCIENCE, SST (NEW BOOKS) ---------- */
+const GMANJARI9 = ["Orienting Yourself: The Use of Coordinates", "Introduction to Linear Polynomials", "The World of Numbers", "Exploring Algebraic Identities", "I'm Up and Down, and Round and Round", "Measuring Space: Perimeter and Area", "The Mathematics of Maybe: Introduction to Probability", "Predicting What Comes Next?: Exploring Sequences and Progressions", "Propositions and their Converses", "How Quantities Combine: Understanding Data", "The World of Algorithms", "Quadrilaterals", "Two Variables, One Line", "Math of Space: Surface Area and Volume"];
+const EXPLORATION9 = ["Exploration: Entering the World of Secondary Science", "Cell: The Building Block of Life", "Tissues in Action", "Describing Motion Around Us", "Exploring Mixtures and Their Separation", "How Forces Affect Motion", "Work, Energy, and Simple Machines", "Journey Inside the Atom", "Atomic Foundations of Matter", "Sound Waves: Characteristics and Applications", "Reproduction: How Life Continues", "Patterns in Life: Diversity and Classification", "Earth as a System: Energy, Matter, and Life"];
+const USOC9 = ["Understanding Social Science", "Shaping of the Earth's Surface", "Atmosphere and Climate", "Early Humans and Beginning of Civilisation", "State and Society up to 1000 CE", "Democracy", "Elections", "Building Blocks in Economics: The Problem of Choice", "The Price Puzzle: What Drives the Market", "Oceans and Life", "Life on Earth", "Resistance and Resilience (1000–1700 CE)", "Governance and Public Policy", "Managing Your Personal Finances", "From Ideas to Startups"];
+function buildClass9Group(subjectName, idAttr, listId, items, dataKey, onPick) {
+  const btn = document.querySelector('[data-grade-list="9"] [data-subject="' + subjectName + '"]');
+  if (!btn) return;
+  btn.removeAttribute("data-subject");
+  btn.id = idAttr;
+  btn.setAttribute("aria-expanded", "false");
+  btn.innerHTML = subjectName + ' <span class="chev">&#9662;</span>';
+  const box = document.createElement("div");
+  box.className = "classlist hidden";
+  box.id = listId;
+  items.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset[dataKey] = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    box.appendChild(cb);
+  });
+  btn.insertAdjacentElement("afterend", box);
+  btn.addEventListener("click", () => {
+    const open = box.classList.toggle("hidden") === false;
+    btn.setAttribute("aria-expanded", String(open));
+  });
+}
+buildClass9Group("Math", "math9Toggle", "math9Chapters", GMANJARI9, "gmanjari9");
+buildClass9Group("Science", "sci9Toggle", "sci9Chapters", EXPLORATION9, "explore9");
+buildClass9Group("SST", "sst9Toggle", "sst9Chapters", USOC9, "usoc9");
+document.querySelectorAll("[data-gmanjari9]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.gmanjari9);
+  classLevel = 9;
+  subject = "Math";
+  toggleNav(false);
+  openSubjectQA("Math", "Ganita Manjari Part 1", n, GMANJARI9[n - 1]);
+  openSubjectPaper("Math", "Ganita Manjari Part 1", n, GMANJARI9[n - 1]);
+}));
+document.querySelectorAll("[data-explore9]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.explore9);
+  classLevel = 9;
+  subject = "Science";
+  toggleNav(false);
+  openSubjectQA("Science", "Exploration", n, EXPLORATION9[n - 1]);
+  openSubjectPaper("Science", "Exploration", n, EXPLORATION9[n - 1]);
+}));
+document.querySelectorAll("[data-usoc9]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.usoc9);
+  classLevel = 9;
+  subject = "SST";
+  toggleNav(false);
+  openSubjectQA("Social Science", "Understanding Society: India and Beyond", n, USOC9[n - 1]);
+  openSubjectPaper("Social Science", "Understanding Society: India and Beyond", n, USOC9[n - 1]);
+}));
+/* ---------- CLASS 10 ENGLISH (2026-27) CHAPTERS ---------- */
+const FIRSTFLIGHT10 = ["A Letter to God", "Nelson Mandela: Long Walk to Freedom", "Two Stories about Flying", "From the Diary of Anne Frank", "Glimpses of India", "Mijbil the Otter", "Madam Rides the Bus", "The Sermon at Benares", "The Proposal"];
+const FOOTPRINTS10 = ["A Triumph of Surgery", "The Thief's Story", "The Midnight Visitor", "A Question of Trust", "Footprints without Feet", "The Making of a Scientist", "The Necklace", "Bholi", "The Book That Saved the Earth"];
+const english10 = document.querySelector('[data-grade-list="10"] [data-subject="English"]');
+if (english10) {
+  english10.removeAttribute("data-subject");
+  english10.id = "english10Toggle";
+  english10.setAttribute("aria-expanded", "false");
+  english10.innerHTML = 'English <span class="chev">&#9662;</span>';
+  const el10 = document.createElement("div");
+  el10.className = "classlist hidden";
+  el10.id = "english10Chapters";
+  const addBook = (title, items, book, key) => {
+    const g = document.createElement("div");
+    g.className = "navgroup";
+    g.textContent = title;
+    el10.appendChild(g);
+    items.forEach((t, i) => {
+      const cb = document.createElement("button");
+      cb.className = "navitem";
+      cb.dataset[key] = String(i + 1);
+      cb.textContent = (i + 1) + ". " + t;
+      el10.appendChild(cb);
+    });
+  };
+  addBook("First Flight", FIRSTFLIGHT10, "First Flight", "ff10");
+  addBook("Footprints without Feet", FOOTPRINTS10, "Footprints without Feet", "ftf10");
+  english10.insertAdjacentElement("afterend", el10);
+  english10.addEventListener("click", () => {
+    const open = el10.classList.toggle("hidden") === false;
+    english10.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-ff10]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.ff10);
+  classLevel = 10;
+  subject = "English";
+  toggleNav(false);
+  openSubjectQA("English", "First Flight", n, FIRSTFLIGHT10[n - 1]);
+  openSubjectPaper("English", "First Flight", n, FIRSTFLIGHT10[n - 1]);
+}));
+document.querySelectorAll("[data-ftf10]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.ftf10);
+  classLevel = 10;
+  subject = "English";
+  toggleNav(false);
+  openSubjectQA("English", "Footprints without Feet", n, FOOTPRINTS10[n - 1]);
+  openSubjectPaper("English", "Footprints without Feet", n, FOOTPRINTS10[n - 1]);
+}));
+/* ---------- CLASS 10 MATH (2026-27) CHAPTERS ---------- */
+const MATH10 = ["Real Numbers", "Polynomials", "Pair of Linear Equations in Two Variables", "Quadratic Equations", "Arithmetic Progressions", "Triangles", "Coordinate Geometry", "Introduction to Trigonometry", "Some Applications of Trigonometry", "Circles", "Areas Related to Circles", "Surface Areas and Volumes", "Statistics", "Probability"];
+const math10 = document.querySelector('[data-grade-list="10"] [data-subject="Math"]');
+if (math10) {
+  math10.removeAttribute("data-subject");
+  math10.id = "math10Toggle";
+  math10.setAttribute("aria-expanded", "false");
+  math10.innerHTML = 'Math <span class="chev">&#9662;</span>';
+  const ml10 = document.createElement("div");
+  ml10.className = "classlist hidden";
+  ml10.id = "math10Chapters";
+  MATH10.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.math10 = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    ml10.appendChild(cb);
+  });
+  math10.insertAdjacentElement("afterend", ml10);
+  math10.addEventListener("click", () => {
+    const open = ml10.classList.toggle("hidden") === false;
+    math10.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-math10]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.math10);
+  classLevel = 10;
+  subject = "Math";
+  toggleNav(false);
+  openSubjectQA("Math", "Mathematics", n, MATH10[n - 1]);
+  openSubjectPaper("Math", "Mathematics", n, MATH10[n - 1]);
+}));
+/* ---------- CLASS 10 HINDI (2026-27, INCOMPLETE) ---------- */
+const KSHITIJ2_10 = ["पद", "राम-लक्ष्मण-परशुराम संवाद", "आत्मकथ्य", "उत्साह, अट नहीं रही है", "यह दंतुरित मुसकान, फसल", "संगतकार", "नेताजी का चश्मा", "बालगोबिन भगत", "लखनवी अंदाज़", "एक कहानी यह भी", "नौबतखाने में इबादत", "संस्कृति"];
+const KSHITIJ2_OLD = ["पद (सूरदास)", "राम-लक्ष्मण-परशुराम संवाद (तुलसीदास)", "साखियाँ और सबद (कबीर)", "संस्कृति (भदंत आनंद कौसल्यायन)"];
+const KRITIKA2_10 = ["माता का आँचल", "जॉर्ज पंचम की नाक", "साना-साना हाथ जोड़ि", "एही ठैयाँ झुलनी हेरानी हो रामा!", "मैं क्यों लिखता हूँ?"];
+const KRITIKA2_OLD = ["माता का आँचल", "साना साना हाथ जोड़ि", "मैं क्यों लिखता हूँ?"];
+const SPARSH2_10 = ["साखी", "पद", "मनुष्यता", "पर्वत प्रदेश में पावस", "तोप", "कर चले हम फ़िदा", "आत्मत्राण", "बड़े भाई साहब", "डायरी का एक पन्ना", "तताँरा-वामीरो कथा", "तीसरी कसम के शिल्पकार शैलेंद्र", "अब कहाँ दूसरे के दुख से दुखी होने वाले", "पतझर में टूटी पत्तियाँ", "कारतूस"];
+const SPARSH2_OLD = ["साखी", "पद", "मनुष्यता", "पर्वत प्रदेश में पावस", "तोप", "कर चले हम फ़िदा", "आत्मत्राण", "बड़े भाई साहब", "कारतूस"];
+const SANCHAYAN2_10 = ["हरिहर काका", "सपनों के-से दिन", "टोपी शुक्ला"];
+const hindi10 = document.querySelector('[data-grade-list="10"] [data-subject="Hindi"]');
+if (hindi10) {
+  hindi10.removeAttribute("data-subject");
+  hindi10.id = "hindi10Toggle";
+  hindi10.setAttribute("aria-expanded", "false");
+  hindi10.innerHTML = 'Hindi <span class="chev">&#9662;</span>';
+  const hl10 = document.createElement("div");
+  hl10.className = "classlist hidden";
+  hl10.id = "hindi10Chapters";
+  const addHindiGroup = (label, items, book, key) => {
+    const g = document.createElement("div");
+    g.className = "navgroup";
+    g.textContent = label;
+    hl10.appendChild(g);
+    items.forEach((t, i) => {
+      const cb = document.createElement("button");
+      cb.className = "navitem";
+      cb.dataset[key] = String(i + 1);
+      cb.textContent = (i + 1) + ". " + t;
+      hl10.appendChild(cb);
+    });
+  };
+  addHindiGroup("Course A: Kshitij Part 2", KSHITIJ2_10, "Kshitij Part 2", "kshitij10");
+  addHindiGroup("Course A: Kritika Part 2", KRITIKA2_10, "Kritika Part 2", "kritika10");
+  addHindiGroup("Course B: Sparsh Part 2", SPARSH2_10, "Sparsh Part 2", "sparsh10");
+  addHindiGroup("Course B: Sanchayan Part 2", SANCHAYAN2_10, "Sanchayan Part 2", "sanchayan10");
+  hindi10.insertAdjacentElement("afterend", hl10);
+  hindi10.addEventListener("click", () => {
+    const open = hl10.classList.toggle("hidden") === false;
+    hindi10.setAttribute("aria-expanded", String(open));
+  });
+}
+const hindi10Books = [["kshitij10", KSHITIJ2_10, "Kshitij Part 2"], ["kritika10", KRITIKA2_10, "Kritika Part 2"], ["sparsh10", SPARSH2_10, "Sparsh Part 2"], ["sanchayan10", SANCHAYAN2_10, "Sanchayan Part 2"]];
+hindi10Books.forEach(([key, items, book]) => {
+  document.querySelectorAll("[data-" + key + "]").forEach(b => b.addEventListener("click", () => {
+    const n = Number(b.dataset[key]);
+    classLevel = 10;
+    subject = "Hindi";
+    toggleNav(false);
+    openSubjectQA("Hindi", book, n, items[n - 1]);
+    openSubjectPaper("Hindi", book, n, items[n - 1], "Hindi (Devanagari)");
+  }));
+});
+/* ---------- CLASS 10 SOCIAL SCIENCE (2026-27, INCOMPLETE) ---------- */
+const HIST10 = [[1, "The Rise of Nationalism in Europe"], [2, "Nationalism in India"], [3, "The Making of a Global World"], [4, "The Age of Industrialisation"], [5, "Print Culture and the Modern World"]];
+const GEO10 = [[1, "Resources and Development"], [2, "Forest and Wildlife Resources"], [3, "Water Resources"], [4, "Agriculture"], [5, "Minerals and Energy Resources"], [6, "Manufacturing Industries"], [7, "Lifelines of National Economy"]];
+const CIV10 = [[1, "Power-Sharing"], [2, "Federalism"], [3, "Gender, Religion and Caste"], [4, "Political Parties"], [5, "Outcomes of Democracy"]];
+const ECO10 = [[1, "Development"], [2, "Sectors of the Indian Economy"], [3, "Money and Credit"], [4, "Globalisation and the Indian Economy"], [5, "Consumer Rights"]];
+const sst10 = document.querySelector('[data-grade-list="10"] [data-subject="SST"]');
+if (sst10) {
+  sst10.removeAttribute("data-subject");
+  sst10.id = "sst10Toggle";
+  sst10.setAttribute("aria-expanded", "false");
+  sst10.innerHTML = 'SST <span class="chev">&#9662;</span>';
+  const sl10 = document.createElement("div");
+  sl10.className = "classlist hidden";
+  sl10.id = "sst10Chapters";
+  const addSstGroup = (label, items, key) => {
+    const g = document.createElement("div");
+    g.className = "navgroup";
+    g.textContent = label;
+    sl10.appendChild(g);
+    items.forEach(([num, t]) => {
+      const cb = document.createElement("button");
+      cb.className = "navitem";
+      cb.dataset[key] = String(num);
+      cb.textContent = num + ". " + t;
+      sl10.appendChild(cb);
+    });
+  };
+  addSstGroup("History: India and the Contemporary World II", HIST10, "hist10");
+  addSstGroup("Geography: Contemporary India II", GEO10, "geo10");
+  addSstGroup("Political Science: Democratic Politics II", CIV10, "civ10");
+  addSstGroup("Economics: Understanding Economic Development", ECO10, "eco10");
+  sst10.insertAdjacentElement("afterend", sl10);
+  sst10.addEventListener("click", () => {
+    const open = sl10.classList.toggle("hidden") === false;
+    sst10.setAttribute("aria-expanded", String(open));
+  });
+}
+[["hist10", HIST10, "India and the Contemporary World II"], ["geo10", GEO10, "Contemporary India II"], ["civ10", CIV10, "Democratic Politics II"], ["eco10", ECO10, "Understanding Economic Development"]].forEach(([key, items, book]) => {
+  document.querySelectorAll("[data-" + key + "]").forEach(b => b.addEventListener("click", () => {
+    const n = Number(b.dataset[key]);
+    const item = items.find(x => x[0] === n);
+    classLevel = 10;
+    subject = "SST";
+    toggleNav(false);
+    openSubjectQA("Social Science", book, n, item[1]);
+    openSubjectPaper("Social Science", book, n, item[1]);
+  }));
+});
+/* ---------- CLASS 10 SCIENCE (2026-27) CHAPTERS ---------- */
+const SCI10 = ["Chemical Reactions and Equations", "Acids, Bases and Salts", "Metals and Non-Metals", "Carbon and Its Compounds", "Life Processes", "Control and Coordination", "How Do Organisms Reproduce?", "Heredity", "Light – Reflection and Refraction", "The Human Eye and the Colourful World", "Electricity", "Magnetic Effects of Electric Current", "Our Environment"];
+const sci10 = document.querySelector('[data-grade-list="10"] [data-subject="Science"]');
+if (sci10) {
+  sci10.removeAttribute("data-subject");
+  sci10.id = "sci10Toggle";
+  sci10.setAttribute("aria-expanded", "false");
+  sci10.innerHTML = 'Science <span class="chev">&#9662;</span>';
+  const sl10s = document.createElement("div");
+  sl10s.className = "classlist hidden";
+  sl10s.id = "sci10Chapters";
+  SCI10.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.sci10 = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    sl10s.appendChild(cb);
+  });
+  sci10.insertAdjacentElement("afterend", sl10s);
+  sci10.addEventListener("click", () => {
+    const open = sl10s.classList.toggle("hidden") === false;
+    sci10.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-sci10]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.sci10);
+  classLevel = 10;
+  subject = "Science";
+  toggleNav(false);
+  openSubjectQA("Science", "Science", n, SCI10[n - 1]);
+  openSubjectPaper("Science", "Science", n, SCI10[n - 1]);
+}));
+/* ---------- CLASS 10 HINDI: COURSE A / COURSE B ---------- */
+const hl10El = document.getElementById("hindi10Chapters");
+if (hl10El) {
+  const hl10Nodes = Array.from(hl10El.children);
+  hl10El.innerHTML = "";
+  const makeCourse = (label, id) => {
+    const t = document.createElement("button");
+    t.className = "navitem";
+    t.id = id;
+    t.setAttribute("aria-expanded", "false");
+    t.innerHTML = label + ' <span class="chev">&#9662;</span>';
+    const box = document.createElement("div");
+    box.className = "classlist hidden";
+    box.id = id + "List";
+    t.addEventListener("click", () => {
+      const open = box.classList.toggle("hidden") === false;
+      t.setAttribute("aria-expanded", String(open));
+    });
+    hl10El.appendChild(t);
+    hl10El.appendChild(box);
+    return box;
+  };
+  const courseABox = makeCourse("Course A", "courseA10");
+  const courseBBox = makeCourse("Course B", "courseB10");
+  let hl10Target = null;
+  hl10Nodes.forEach(node => {
+    if (node.classList.contains("navgroup")) {
+      hl10Target = /Sparsh|Sanchayan/.test(node.textContent) ? courseBBox : courseABox;
+    }
+    if (hl10Target) hl10Target.appendChild(node);
+  });
+}
+/* ---------- CLASS 11 COMMERCE SUBJECTS (chapter lists pending) ---------- */
+const ACC11 = ["Introduction to Accounting", "Theory Base of Accounting", "Recording of Transactions – I", "Recording of Transactions – II", "Bank Reconciliation Statement", "Trial Balance and Rectification of Errors", "Depreciation, Provisions and Reserves", "Financial Statements – I", "Financial Statements – II"];
+const BS11 = ["Business, Trade and Commerce", "Forms of Business Organisation", "Private, Public and Global Enterprises", "Business Services", "Emerging Modes of Business", "Social Responsibilities of Business and Business Ethics", "Corporate Organisation, Finance and Trade", "Sources of Business Finance", "MSME and Business Entrepreneurship", "Internal Trade", "International Business"];
+const EN11 = ["The Portrait of a Lady", "We're Not Afraid to Die...if We Can All Be Together", "Discovering Tut: The Saga Continues", "The Adventure", "Silk Road", "A Photograph", "The Laburnum Top", "The Voice of the Rain", "Childhood", "Father to Son", "The Summer of the Beautiful White Horse", "The Address", "Mother's Day", "Birth", "The Tale of Melon City"];
+const EC11 = ["Introduction", "Collection of Data", "Organisation of Data", "Presentation of Data", "Measures of Central Tendency", "Correlation", "Index Numbers", "Use of Statistical Tools", "Development Policies and Experience (1947–90)", "Indian Economy", "Economic Reforms Since 1991", "Current Challenges Facing the Indian Economy", "Rural Development", "Employment: Growth, Informalisation and Other Issues", "Environment and Sustainable Development", "Development Experiences of India: A Comparison with Neighbours"];
+const COMM11 = [["Accountancy", "Financial Accounting (NCERT)"], ["Business Studies", "Business Studies (NCERT)"], ["Economics", "Statistics for Economics; Indian Economic Development (NCERT)"]];
+const comm11 = document.querySelector('[data-grade-list="11"] [data-subject="Commerce"]');
+if (comm11) {
+  comm11.removeAttribute("data-subject");
+  comm11.id = "comm11Toggle";
+  comm11.setAttribute("aria-expanded", "false");
+  comm11.innerHTML = 'Commerce <span class="chev">&#9662;</span>';
+  const cl11 = document.createElement("div");
+  cl11.className = "classlist hidden";
+  cl11.id = "comm11Subjects";
+  COMM11.forEach(([name, book]) => {
+    const t = document.createElement("button");
+    t.className = "navitem";
+    t.innerHTML = name + ' <span class="chev">&#9662;</span>';
+    const box = document.createElement("div");
+    box.className = "classlist hidden";
+    box.appendChild(el("div", "muted", "Book: " + book));
+    if (name === "Business Studies") {
+      BS11.forEach((t, i) => {
+        const cb = document.createElement("button");
+        cb.className = "navitem";
+        cb.dataset.bs11 = String(i + 1);
+        cb.textContent = (i + 1) + ". " + t;
+        box.appendChild(cb);
+      });
+    } else if (name === "Economics") {
+      box.appendChild(el("div", "navgroup", "Statistics for Economics"));
+      EC11.slice(0, 8).forEach((t, i) => {
+        const cb = document.createElement("button");
+        cb.className = "navitem";
+        cb.dataset.ec11 = String(i + 1);
+        cb.textContent = (i + 1) + ". " + t;
+        box.appendChild(cb);
+      });
+      box.appendChild(el("div", "navgroup", "Indian Economic Development"));
+      EC11.slice(8).forEach((t, i) => {
+        const cb = document.createElement("button");
+        cb.className = "navitem";
+        cb.dataset.ec11 = String(i + 9);
+        cb.textContent = (i + 9) + ". " + t;
+        box.appendChild(cb);
+      });
+    } else if (name === "English") {
+      box.appendChild(el("div", "navgroup", "Hornbill (Core)"));
+      EN11.slice(0, 10).forEach((t, i) => {
+        const cb = document.createElement("button");
+        cb.className = "navitem";
+        cb.dataset.en11 = String(i + 1);
+        cb.textContent = (i + 1) + ". " + t;
+        box.appendChild(cb);
+      });
+      box.appendChild(el("div", "navgroup", "Snapshots (Supplementary Reader)"));
+      EN11.slice(10).forEach((t, i) => {
+        const cb = document.createElement("button");
+        cb.className = "navitem";
+        cb.dataset.en11 = String(i + 11);
+        cb.textContent = (i + 11) + ". " + t;
+        box.appendChild(cb);
+      });
+    } else if (name === "Accountancy") {
+      ACC11.forEach((t, i) => {
+        const cb = document.createElement("button");
+        cb.className = "navitem";
+        cb.dataset.acc11 = String(i + 1);
+        cb.textContent = (i + 1) + ". " + t;
+        box.appendChild(cb);
+      });
+    } else {
+      box.appendChild(el("div", "muted", "Chapter list coming soon. Send a screenshot to add it."));
+    }
+    t.addEventListener("click", () => box.classList.toggle("hidden"));
+    cl11.appendChild(t);
+    cl11.appendChild(box);
+  });
+  comm11.insertAdjacentElement("afterend", cl11);
+  comm11.addEventListener("click", () => {
+    const open = cl11.classList.toggle("hidden") === false;
+    comm11.setAttribute("aria-expanded", String(open));
+  });
+}
+document.querySelectorAll("[data-ec11]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.ec11);
+  classLevel = 11;
+  subject = "Economics";
+  toggleNav(false);
+  openSubjectQA("Economics", "Statistics for Economics; Indian Economic Development", n, EC11[n - 1]);
+  openSubjectPaper("Economics", "Statistics for Economics; Indian Economic Development", n, EC11[n - 1]);
+}));
+document.querySelectorAll("[data-en11]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.en11);
+  classLevel = 11;
+  subject = "English";
+  toggleNav(false);
+  openSubjectQA("English", "Hornbill and Snapshots", n, EN11[n - 1]);
+  openSubjectPaper("English", "Hornbill and Snapshots", n, EN11[n - 1]);
+}));
+document.querySelectorAll("[data-bs11]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.bs11);
+  classLevel = 11;
+  subject = "Business Studies";
+  toggleNav(false);
+  openSubjectQA("Business Studies", "Business Studies", n, BS11[n - 1]);
+  openSubjectPaper("Business Studies", "Business Studies", n, BS11[n - 1]);
+}));
+document.querySelectorAll("[data-acc11]").forEach(b => b.addEventListener("click", () => {
+  const n = Number(b.dataset.acc11);
+  classLevel = 11;
+  subject = "Accountancy";
+  toggleNav(false);
+  openSubjectQA("Accountancy", "Financial Accounting", n, ACC11[n - 1]);
+  openSubjectPaper("Accountancy", "Financial Accounting", n, ACC11[n - 1]);
+}));
+const PHY11 = ["Units and Measurements", "Motion in a Straight Line", "Motion in a Plane", "Laws of Motion", "Work, Energy and Power", "System of Particles and Rotational Motion", "Gravitation", "Mechanical Properties of Solids", "Mechanical Properties of Fluids", "Thermal Properties of Matter", "Thermodynamics", "Kinetic Theory", "Oscillations", "Waves"];
+const CHEM11 = ["Some Basic Concepts of Chemistry", "Structure of Atom", "Classification of Elements and Periodicity in Properties", "Chemical Bonding and Molecular Structure", "Chemical Thermodynamics", "Equilibrium", "Redox Reactions", "Organic Chemistry: Some Basic Principles and Techniques", "Hydrocarbons"];
+const MATH11 = ["Sets and Functions", "Algebra", "Coordinate Geometry", "Calculus", "Statistics and Probability"];
+/* ---------- CLASS 11 PCM SUBJECTS ---------- */
+const pcm11 = document.querySelector('[data-grade-list="11"] [data-subject="PCM"]');
+if (pcm11) {
+  pcm11.removeAttribute("data-subject");
+  pcm11.id = "pcm11Toggle";
+  pcm11.setAttribute("aria-expanded", "false");
+  pcm11.innerHTML = 'PCM <span class="chev">&#9662;</span>';
+  const pl11 = document.createElement("div");
+  pl11.className = "classlist hidden";
+  pl11.id = "pcm11Subjects";
+  [["Physics", "Physics Part I and Part II (NCERT)"], ["Chemistry", "Chemistry Part I and Part II (NCERT)"], ["Mathematics", "Mathematics (NCERT)"]].forEach(([name, book]) => {
+    const t = document.createElement("button");
+    t.className = "navitem";
+    t.innerHTML = name + ' <span class="chev">&#9662;</span>';
+    const box = document.createElement("div");
+    box.className = "classlist hidden";
+    const pcmLists = { Physics: PHY11, Chemistry: CHEM11, Mathematics: MATH11 };
+    const pcmKeys = { Physics: "phy11", Chemistry: "chem11", Mathematics: "math11" };
+    if (pcmLists[name]) {
+      box.appendChild(el("div", "muted", "CBSE syllabus units (2026-27)"));
+      pcmLists[name].forEach((t, i) => {
+        const cb = document.createElement("button");
+        cb.className = "navitem";
+        cb.dataset[pcmKeys[name]] = String(i + 1);
+        cb.textContent = (i + 1) + ". " + t;
+        box.appendChild(cb);
+      });
+    } else if (name === "English") {
+      EN11.forEach((txt, i) => {
+        const cb = document.createElement("button");
+        cb.className = "navitem";
+        cb.dataset.pen11 = String(i + 1);
+        cb.textContent = (i + 1) + ". " + txt;
+        box.appendChild(cb);
+      });
+    } else {
+      box.appendChild(el("div", "muted", "Book: " + book));
+      box.appendChild(el("div", "muted", "Chapter list coming soon. Send a screenshot to add it."));
+    }
+    t.addEventListener("click", () => box.classList.toggle("hidden"));
+    pl11.appendChild(t);
+    pl11.appendChild(box);
+  });
+  pcm11.insertAdjacentElement("afterend", pl11);
+  pcm11.addEventListener("click", () => {
+    const open = pl11.classList.toggle("hidden") === false;
+    pcm11.setAttribute("aria-expanded", String(open));
+  });
+  document.querySelectorAll("[data-pen11]").forEach(b => b.addEventListener("click", () => {
+    const n = Number(b.dataset.pen11);
+    classLevel = 11;
+    subject = "English";
+    toggleNav(false);
+    openSubjectQA("English", "Hornbill and Snapshots", n, EN11[n - 1]);
+    openSubjectPaper("English", "Hornbill and Snapshots", n, EN11[n - 1]);
+  }));
+}
+[["phy11", PHY11, "Physics"], ["chem11", CHEM11, "Chemistry"], ["math11", MATH11, "Mathematics"]].forEach(([key, items, subj]) => {
+  document.querySelectorAll("[data-" + key + "]").forEach(b => b.addEventListener("click", () => {
+    const n = Number(b.dataset[key]);
+    classLevel = 11;
+    subject = subj;
+    toggleNav(false);
+    openSubjectQA(subj, "CBSE Class 11 syllabus (2026-27)", n, items[n - 1]);
+    openSubjectPaper(subj, "CBSE Class 11 syllabus (2026-27)", n, items[n - 1]);
+  }));
+});
+/* ---------- CLASS 11 ENGLISH (MAIN SUBJECT) ---------- */
+const cls11List = document.querySelector('[data-grade-list="11"]');
+if (cls11List) {
+  const eng11 = document.createElement("button");
+  eng11.className = "navitem";
+  eng11.id = "english11Toggle";
+  eng11.setAttribute("aria-expanded", "false");
+  eng11.innerHTML = 'English <span class="chev">&#9662;</span>';
+  const eb11 = document.createElement("div");
+  eb11.className = "classlist hidden";
+  eb11.id = "english11Chapters";
+  eb11.appendChild(el("div", "navgroup", "Hornbill (Core)"));
+  EN11.slice(0, 10).forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.main11en = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    eb11.appendChild(cb);
+  });
+  eb11.appendChild(el("div", "navgroup", "Snapshots (Supplementary Reader)"));
+  EN11.slice(10).forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.main11en = String(i + 11);
+    cb.textContent = (i + 11) + ". " + t;
+    eb11.appendChild(cb);
+  });
+  cls11List.appendChild(eng11);
+  cls11List.appendChild(eb11);
+  eng11.addEventListener("click", () => {
+    const open = eb11.classList.toggle("hidden") === false;
+    eng11.setAttribute("aria-expanded", String(open));
+  });
+  document.querySelectorAll("[data-main11en]").forEach(b => b.addEventListener("click", () => {
+    const n = Number(b.dataset.main11en);
+    classLevel = 11;
+    subject = "English";
+    toggleNav(false);
+    openSubjectQA("English", "Hornbill and Snapshots", n, EN11[n - 1]);
+    openSubjectPaper("English", "Hornbill and Snapshots", n, EN11[n - 1]);
+  }));
+}
+const BIO11 = ["The Living World", "Biological Classification", "Plant Kingdom", "Animal Kingdom", "Morphology of Flowering Plants", "Anatomy of Flowering Plants", "Cell: The Unit of Life", "Biomolecules", "Cell Cycle and Cell Division", "Photosynthesis in Higher Plants", "Respiration in Plants", "Plant Growth and Development", "Breathing and Exchange of Gases", "Body Fluids and Circulation", "Excretory Products and Their Elimination", "Locomotion and Movement", "Neural Control and Coordination", "Chemical Coordination and Integration"];
+/* ---------- CLASS 11 PCB SUBJECTS ---------- */
+const pcb11 = document.querySelector('[data-grade-list="11"] [data-subject="PCB"]');
+if (pcb11) {
+  pcb11.removeAttribute("data-subject");
+  pcb11.id = "pcb11Toggle";
+  pcb11.setAttribute("aria-expanded", "false");
+  pcb11.innerHTML = 'PCB <span class="chev">&#9662;</span>';
+  const pbl11 = document.createElement("div");
+  pbl11.className = "classlist hidden";
+  pbl11.id = "pcb11Subjects";
+  [["Physics", "pcbphy11", PHY11], ["Chemistry", "pcbchem11", CHEM11], ["Biology", "pcbbio11", BIO11]].forEach(([name, key, items]) => {
+    const t = document.createElement("button");
+    t.className = "navitem";
+    t.innerHTML = name + ' <span class="chev">&#9662;</span>';
+    const box = document.createElement("div");
+    box.className = "classlist hidden";
+    if (items) {
+      box.appendChild(el("div", "muted", "CBSE syllabus units (2026-27)"));
+      items.forEach((txt, i) => {
+        const cb = document.createElement("button");
+        cb.className = "navitem";
+        cb.dataset[key] = String(i + 1);
+        cb.textContent = (i + 1) + ". " + txt;
+        box.appendChild(cb);
+      });
+    } else {
+      box.appendChild(el("div", "muted", "Biology syllabus coming soon. Send the Biology screenshot to add it."));
+    }
+    t.addEventListener("click", () => box.classList.toggle("hidden"));
+    pbl11.appendChild(t);
+    pbl11.appendChild(box);
+  });
+  pcb11.insertAdjacentElement("afterend", pbl11);
+  pcb11.addEventListener("click", () => {
+    const open = pbl11.classList.toggle("hidden") === false;
+    pcb11.setAttribute("aria-expanded", String(open));
+  });
+  [["pcbphy11", PHY11, "Physics"], ["pcbchem11", CHEM11, "Chemistry"], ["pcbbio11", BIO11, "Biology"]].forEach(([key, items, subj]) => {
+    document.querySelectorAll("[data-" + key + "]").forEach(b => b.addEventListener("click", () => {
+      const n = Number(b.dataset[key]);
+      classLevel = 11;
+      subject = subj;
+      toggleNav(false);
+      openSubjectQA(subj, "CBSE Class 11 syllabus (2026-27)", n, items[n - 1]);
+      openSubjectPaper(subj, "CBSE Class 11 syllabus (2026-27)", n, items[n - 1]);
+    }));
+  });
+}
+/* ---------- CLASS 11 ARTS SUBJECTS ---------- */
+const arts11 = document.querySelector('[data-grade-list="11"] [data-subject="Arts"]');
+if (arts11) {
+  arts11.removeAttribute("data-subject");
+  arts11.id = "arts11Toggle";
+  arts11.setAttribute("aria-expanded", "false");
+  arts11.innerHTML = 'Arts <span class="chev">&#9662;</span>';
+  const al11 = document.createElement("div");
+  al11.className = "classlist hidden";
+  al11.id = "arts11Subjects";
+  const artsSubjects = [
+    ["History", "Themes in World History (NCERT)"],
+    ["Political Science", "Indian Constitution at Work; Political Theory (NCERT)"],
+    ["Geography", "Fundamentals of Physical Geography; India: Physical Environment; Practical Work in Geography Part I (NCERT)"],
+    ["Economics", "Statistics for Economics; Indian Economic Development (NCERT)"],
+    ["Sociology", "Introducing Sociology; Understanding Society (NCERT)"],
+    ["Psychology", "Introduction to Psychology (NCERT)"],
+    ["Physical Education", "Physical Education (NCERT)"]
+  ];
+  artsSubjects.forEach(([name, book]) => {
+    const t = document.createElement("button");
+    t.className = "navitem";
+    t.innerHTML = name + ' <span class="chev">&#9662;</span>';
+    const box = document.createElement("div");
+    box.className = "classlist hidden";
+    box.appendChild(el("div", "muted", "Book: " + book));
+    if (name === "Economics") {
+      EC11.forEach((txt, i) => {
+        const cb = document.createElement("button");
+        cb.className = "navitem";
+        cb.dataset.artec11 = String(i + 1);
+        cb.textContent = (i + 1) + ". " + txt;
+        box.appendChild(cb);
+      });
+    } else {
+      box.appendChild(el("div", "muted", "Chapter list coming soon. Send a screenshot to add it."));
+    }
+    t.addEventListener("click", () => box.classList.toggle("hidden"));
+    al11.appendChild(t);
+    al11.appendChild(box);
+  });
+  arts11.insertAdjacentElement("afterend", al11);
+  arts11.addEventListener("click", () => {
+    const open = al11.classList.toggle("hidden") === false;
+    arts11.setAttribute("aria-expanded", String(open));
+  });
+  document.querySelectorAll("[data-artec11]").forEach(b => b.addEventListener("click", () => {
+    const n = Number(b.dataset.artec11);
+    classLevel = 11;
+    subject = "Economics";
+    toggleNav(false);
+    openSubjectQA("Economics", "Statistics for Economics; Indian Economic Development", n, EC11[n - 1]);
+    openSubjectPaper("Economics", "Statistics for Economics; Indian Economic Development", n, EC11[n - 1]);
+  }));
+}
+/* ---------- CLASS 12 PCM AND PCB SYLLABUS ---------- */
+const P12 = ["Electric Charges and Fields", "Electrostatic Potential and Capacitance", "Current Electricity", "Moving Charges and Magnetism", "Magnetism and Matter", "Electromagnetic Induction", "Alternating Current", "Electromagnetic Waves", "Ray Optics and Optical Instruments", "Wave Optics", "Dual Nature of Radiation and Matter", "Atoms", "Nuclei", "Semiconductor Electronics"];
+const C12 = ["Solutions", "Electrochemistry", "Chemical Kinetics", "The d- and f-Block Elements", "Coordination Compounds", "Haloalkanes and Haloarenes", "Alcohols, Phenols and Ethers", "Aldehydes, Ketones and Carboxylic Acids", "Amines", "Biomolecules"];
+const M12 = ["Relations and Functions", "Inverse Trigonometric Functions", "Matrices", "Determinants", "Continuity and Differentiability", "Applications of Derivatives", "Integrals", "Applications of Integrals", "Differential Equations", "Vector Algebra", "Three-Dimensional Geometry", "Linear Programming", "Probability"];
+const B12 = ["Sexual Reproduction in Flowering Plants", "Human Reproduction", "Reproductive Health", "Principles of Inheritance and Variation", "Molecular Basis of Inheritance", "Evolution", "Human Health and Disease", "Microbes in Human Welfare", "Biotechnology: Principles and Processes", "Biotechnology and Its Applications", "Organisms and Populations", "Ecosystem", "Biodiversity and Conservation"];
+function buildStream12(btnKey, label, subs) {
+  const btn = document.querySelector('[data-grade-list="12"] [data-subject="' + btnKey + '"]');
+  if (!btn) return;
+  btn.removeAttribute("data-subject");
+  btn.id = label.toLowerCase() + "12Toggle";
+  btn.setAttribute("aria-expanded", "false");
+  btn.innerHTML = label + ' <span class="chev">&#9662;</span>';
+  const list = document.createElement("div");
+  list.className = "classlist hidden";
+  list.id = label.toLowerCase() + "12Subjects";
+  subs.forEach(([name, items, key]) => {
+    const t = document.createElement("button");
+    t.className = "navitem";
+    t.innerHTML = name + ' <span class="chev">&#9662;</span>';
+    const box = document.createElement("div");
+    box.className = "classlist hidden";
+    box.appendChild(el("div", "muted", "CBSE Class 12 syllabus (2026-27)"));
+    items.forEach((txt, i) => {
+      const cb = document.createElement("button");
+      cb.className = "navitem";
+      cb.dataset[key] = String(i + 1);
+      cb.textContent = (i + 1) + ". " + txt;
+      box.appendChild(cb);
+    });
+    t.addEventListener("click", () => box.classList.toggle("hidden"));
+    list.appendChild(t);
+    list.appendChild(box);
+  });
+  btn.insertAdjacentElement("afterend", list);
+  btn.addEventListener("click", () => {
+    const open = list.classList.toggle("hidden") === false;
+    btn.setAttribute("aria-expanded", String(open));
+  });
+}
+buildStream12("PCM", "PCM", [["Physics", P12, "phy12"], ["Chemistry", C12, "chem12"], ["Mathematics", M12, "math12"]]);
+buildStream12("PCB", "PCB", [["Physics", P12, "pcbphy12"], ["Chemistry", C12, "pcbchem12"], ["Biology", B12, "pcbbio12"]]);
+[["phy12", P12, "Physics"], ["chem12", C12, "Chemistry"], ["math12", M12, "Mathematics"], ["pcbphy12", P12, "Physics"], ["pcbchem12", C12, "Chemistry"], ["pcbbio12", B12, "Biology"]].forEach(([key, items, subj]) => {
+  document.querySelectorAll("[data-" + key + "]").forEach(b => b.addEventListener("click", () => {
+    const n = Number(b.dataset[key]);
+    classLevel = 12;
+    subject = subj;
+    toggleNav(false);
+    openSubjectQA(subj, "CBSE Class 12 syllabus (2026-27)", n, items[n - 1]);
+    openSubjectPaper(subj, "CBSE Class 12 syllabus (2026-27)", n, items[n - 1]);
+  }));
+});
+/* ---------- CLASS 12 COMMERCE AND ENGLISH ---------- */
+const ACC12 = ["Accounting for Partnership Firms – Fundamentals", "Goodwill: Nature and Valuation", "Change in Profit-Sharing Ratio Among Existing Partners", "Admission of a Partner", "Retirement and Death of a Partner", "Dissolution of a Partnership Firm", "Accounting for Share Capital", "Issue and Redemption of Debentures", "Financial Statements of a Company", "Analysis of Financial Statements", "Accounting Ratios", "Cash Flow Statement"];
+const BS12 = ["Nature and Significance of Management", "Principles of Management", "Business Environment", "Planning", "Organising", "Staffing", "Directing", "Controlling", "Financial Management", "Financial Markets", "Marketing Management", "Consumer Protection"];
+const EC12 = ["Introduction", "National Income Accounting", "Money and Banking", "Determination of Income and Employment", "Government Budget and the Economy", "Open Economy Macroeconomics", "Indian Economy on the Eve of Independence", "Indian Economy (1950–1990)", "Liberalisation, Privatisation and Globalisation: An Appraisal", "Human Capital Formation in India", "Rural Development", "Employment: Growth, Informalisation and Other Issues", "Environment and Sustainable Development", "Comparative Development Experiences of India and its Neighbours"];
+const FLAM12 = ["The Last Lesson", "Lost Spring", "Deep Water", "The Rattrap", "Indigo", "Poets and Pancakes", "The Interview", "Going Places", "My Mother at Sixty-Six", "Keeping Quiet", "A Thing of Beauty", "A Roadside Stand", "Aunt Jennifer's Tigers"];
+const VIS12 = ["The Third Level", "The Tiger King", "Journey to the End of the Earth", "The Enemy", "On the Face of It", "Memories of Childhood"];
+const comm12 = document.querySelector('[data-grade-list="12"] [data-subject="Commerce"]');
+if (comm12) {
+  comm12.removeAttribute("data-subject");
+  comm12.id = "comm12Toggle";
+  comm12.setAttribute("aria-expanded", "false");
+  comm12.innerHTML = 'Commerce <span class="chev">&#9662;</span>';
+  const cl12 = document.createElement("div");
+  cl12.className = "classlist hidden";
+  cl12.id = "comm12Subjects";
+  [["Accountancy", ACC12, "com12acc", 0], ["Business Studies", BS12, "com12bs", 0], ["Economics", EC12, "com12eco", 6]].forEach(([name, items, key, split]) => {
+    const t = document.createElement("button");
+    t.className = "navitem";
+    t.innerHTML = name + ' <span class="chev">&#9662;</span>';
+    const box = document.createElement("div");
+    box.className = "classlist hidden";
+    if (name === "Economics") box.appendChild(el("div", "navgroup", "Introductory Macroeconomics"));
+    items.forEach((txt, i) => {
+      if (name === "Economics" && i === split) box.appendChild(el("div", "navgroup", "Indian Economic Development"));
+      const cb = document.createElement("button");
+      cb.className = "navitem";
+      cb.dataset[key] = String(i + 1);
+      cb.textContent = (i + 1) + ". " + txt;
+      box.appendChild(cb);
+    });
+    t.addEventListener("click", () => box.classList.toggle("hidden"));
+    cl12.appendChild(t);
+    cl12.appendChild(box);
+  });
+  comm12.insertAdjacentElement("afterend", cl12);
+  comm12.addEventListener("click", () => {
+    const open = cl12.classList.toggle("hidden") === false;
+    comm12.setAttribute("aria-expanded", String(open));
+  });
+}
+const cls12List = document.querySelector('[data-grade-list="12"]');
+if (cls12List) {
+  const en12 = document.createElement("button");
+  en12.className = "navitem";
+  en12.id = "english12Toggle";
+  en12.setAttribute("aria-expanded", "false");
+  en12.innerHTML = 'English <span class="chev">&#9662;</span>';
+  const eb12 = document.createElement("div");
+  eb12.className = "classlist hidden";
+  eb12.id = "english12Chapters";
+  eb12.appendChild(el("div", "navgroup", "Flamingo (Core)"));
+  FLAM12.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.flam12 = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    eb12.appendChild(cb);
+  });
+  eb12.appendChild(el("div", "navgroup", "Vistas (Supplementary Reader)"));
+  VIS12.forEach((t, i) => {
+    const cb = document.createElement("button");
+    cb.className = "navitem";
+    cb.dataset.vis12 = String(i + 1);
+    cb.textContent = (i + 1) + ". " + t;
+    eb12.appendChild(cb);
+  });
+  cls12List.appendChild(en12);
+  cls12List.appendChild(eb12);
+  en12.addEventListener("click", () => {
+    const open = eb12.classList.toggle("hidden") === false;
+    en12.setAttribute("aria-expanded", String(open));
+  });
+}
+[["com12acc", ACC12, "Accountancy", "Accountancy Part I and Part II"], ["com12bs", BS12, "Business Studies", "Business Studies Part A and Part B"], ["com12eco", EC12, "Economics", "Introductory Macroeconomics; Indian Economic Development"], ["flam12", FLAM12, "English", "Flamingo"], ["vis12", VIS12, "English", "Vistas"]].forEach(([key, items, subj, book]) => {
+  document.querySelectorAll("[data-" + key + "]").forEach(b => b.addEventListener("click", () => {
+    const n = Number(b.dataset[key]);
+    classLevel = 12;
+    subject = subj;
+    toggleNav(false);
+    openSubjectQA(subj, book, n, items[n - 1]);
+    openSubjectPaper(subj, book, n, items[n - 1]);
+  }));
+});
+/* ---------- CLASS 12 ARTS SUBJECTS ---------- */
+const HIS12 = ["Bricks, Beads and Bones", "Kings, Farmers and Towns", "Kinship, Caste and Class", "Thinkers, Beliefs and Buildings", "Through the Eyes of Travellers", "Bhakti-Sufi Traditions", "An Imperial Capital: Vijayanagara", "Peasants, Zamindars and the State", "Colonialism and the Countryside", "Rebels and the Raj", "Mahatma Gandhi and the Nationalist Movement", "Framing the Constitution"];
+const PSA12 = ["The End of Bipolarity", "Contemporary Centres of Power", "Contemporary South Asia", "International Organisations", "Security in the Contemporary World", "Environment and Natural Resources", "Globalisation"];
+const PSB12 = ["Challenges of Nation-Building", "Era of One-Party Dominance", "Politics of Planned Development", "India's External Relations", "Challenges to and Restoration of the Congress System", "The Crisis of Democratic Order", "Regional Aspirations", "Recent Developments in Indian Politics"];
+const GEOA12 = ["Human Geography", "The World Population: Distribution, Density and Growth", "Human Development", "Primary Activities", "Secondary Activities", "Tertiary and Quaternary Activities", "Transport, Communication and Trade", "International Trade"];
+const GEOB12 = ["Population: Distribution, Density, Growth and Composition", "Human Settlements", "Land Resources and Agriculture", "Water Resources", "Mineral and Energy Resources", "Planning and Sustainable Development in Indian Context", "Transport and Communication", "International Trade", "Geographical Perspective on Selected Issues and Problems"];
+const SOC12 = ["Introducing Indian Society", "The Demographic Structure of Indian Society", "Social Institutions: Continuity and Change", "Patterns of Social Inequality and Exclusion", "The Challenges of Cultural Diversity", "Structural Change", "Cultural Change", "Change and Development in Rural Society", "Change and Development in Industrial Society", "Social Movements"];
+const PSY12 = ["Variations in Psychological Attributes", "Self and Personality", "Meeting Life Challenges", "Psychological Disorders", "Therapeutic Approaches", "Attitude and Social Cognition", "Social Influence and Group Processes"];
+const ART12 = [
+  { name: "History", key: "art12his", groups: [["Themes in Indian History (Parts I, II and III)", HIS12]] },
+  { name: "Political Science", key: "art12ps", groups: [["Contemporary World Politics", PSA12], ["Politics in India Since Independence", PSB12]] },
+  { name: "Geography", key: "art12geo", groups: [["Fundamentals of Human Geography", GEOA12], ["India: People and Economy", GEOB12]] },
+  { name: "Sociology", key: "art12soc", groups: [["Sociology", SOC12]] },
+  { name: "Psychology", key: "art12psy", groups: [["Psychology", PSY12]] }
+];
+const art12 = document.querySelector('[data-grade-list="12"] [data-subject="Arts"]');
+if (art12) {
+  art12.removeAttribute("data-subject");
+  art12.id = "arts12Toggle";
+  art12.setAttribute("aria-expanded", "false");
+  art12.innerHTML = 'Arts <span class="chev">&#9662;</span>';
+  const al12 = document.createElement("div");
+  al12.className = "classlist hidden";
+  al12.id = "arts12Subjects";
+  ART12.forEach(s => {
+    const t = document.createElement("button");
+    t.className = "navitem";
+    t.innerHTML = s.name + ' <span class="chev">&#9662;</span>';
+    const box = document.createElement("div");
+    box.className = "classlist hidden";
+    let idx = 0;
+    s.groups.forEach(([label, items]) => {
+      box.appendChild(el("div", "navgroup", label));
+      items.forEach(txt => {
+        idx++;
+        const cb = document.createElement("button");
+        cb.className = "navitem";
+        cb.dataset[s.key] = String(idx);
+        cb.textContent = idx + ". " + txt;
+        box.appendChild(cb);
+      });
+    });
+    t.addEventListener("click", () => box.classList.toggle("hidden"));
+    al12.appendChild(t);
+    al12.appendChild(box);
+  });
+  art12.insertAdjacentElement("afterend", al12);
+  art12.addEventListener("click", () => {
+    const open = al12.classList.toggle("hidden") === false;
+    art12.setAttribute("aria-expanded", String(open));
+  });
+  ART12.forEach(s => {
+    const flat = s.groups.flatMap(g => g[1]);
+    document.querySelectorAll("[data-" + s.key + "]").forEach(b => b.addEventListener("click", () => {
+      const n = Number(b.dataset[s.key]);
+      classLevel = 12;
+      subject = s.name;
+      toggleNav(false);
+      openSubjectQA(s.name, "CBSE Class 12 syllabus (2026-27)", n, flat[n - 1]);
+      openSubjectPaper(s.name, "CBSE Class 12 syllabus (2026-27)", n, flat[n - 1]);
+    }));
+  });
+}
+$("#class6Toggle").addEventListener("click", () => {
+  const open = $("#subjectList").classList.toggle("hidden") === false;
+  $("#class6Toggle").setAttribute("aria-expanded", String(open));
+});
+$("#classToggle").addEventListener("click", () => {
+  const open = $("#classList").classList.toggle("hidden") === false;
+  $("#classToggle").setAttribute("aria-expanded", String(open));
+});
+let subject = null;
+document.querySelectorAll("[data-subject]").forEach(b => b.addEventListener("click", () => {
+  classLevel = Number(b.closest("[data-grade-list]").dataset.gradeList);
+  subject = b.dataset.subject;
+  document.querySelectorAll("#classList > .navitem").forEach(x => x.classList.remove("active"));
+  document.querySelectorAll("[data-subject]").forEach(x => x.classList.toggle("active", x === b));
+  b.closest("[data-grade-list]").previousElementSibling.classList.add("active");
+  toggleNav(false);
+  renderHome();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}));
+function gradeText() { return classLevel ? "a Class " + classLevel + (subject ? " " + subject : "") + " student" : "a student"; }
+document.querySelectorAll("#navMenu [data-class]").forEach(b => b.addEventListener("click", () => {
+  classLevel = Number(b.dataset.class);
+  subject = null;
+  $("#class6Toggle").classList.remove("active");
+  document.querySelectorAll("#navMenu [data-class]").forEach(x => x.classList.toggle("active", x === b));
+  toggleNav(false);
+  setStatus($("#uploadStatus"), "Class " + classLevel + " selected. Summaries and practice will match this level.");
+}));
+document.body.appendChild($("#menuBtn"));
+$("#menuBtn").addEventListener("click", () => toggleNav());
+document.addEventListener("click", e => { if (e.target && e.target.id === "navBackdrop") toggleNav(false); });
+document.querySelectorAll("#navMenu [data-go]").forEach(b => b.addEventListener("click", () => go(b.dataset.go)));
+ 
+document.addEventListener("keydown", e => { if (e.key === "Escape") toggleNav(false); });
+ 
+/* ---------- tabs ---------- */
+document.querySelectorAll(".tab").forEach(t => t.addEventListener("click", () => {
+  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === t));
+  document.querySelectorAll("[data-pane]").forEach(p => p.classList.toggle("hidden", p.dataset.pane !== t.dataset.tab));
+  if (t.dataset.tab === "progress") renderStats();
+}));
+ 
+/* ---------- SUMMARY ---------- */
+$("#sumBtn").addEventListener("click", async () => {
+  if ($("#sumNotes").value.trim()) chapter = { title: "Student notes or topic", text: $("#sumNotes").value.trim().slice(0, MAX_CHARS) };
+  if (!chapter.text) { setStatus($("#sumStatus"), "Paste your notes or type a topic first, then press Generate summary.", true); return; }
+  const btn = $("#sumBtn"); btn.disabled = true; btn.textContent = "Generating...";
+  setStatus($("#sumStatus"), "Reading your chapter...");
+  $("#sumOut").innerHTML = "";
+  try {
+    const data = parseJSON(await ask(
+`You are a helpful study assistant. Summarize the chapter below for ${gradeText()} preparing for an exam. Use simple, accurate language and do not invent facts that are not in the text.
+Return ONLY valid JSON, with no markdown, in this shape:
+{"key_points":["..."],"key_terms":[{"term":"...","meaning":"..."}],"exam_tips":["..."]}
+Give 5 to 8 key points, up to 8 key terms, and 3 exam tips.
+ 
+Chapter title: ${chapter.title}
+Chapter text:
+"""${chapter.text}"""`));
+    renderSummary(data);
+    setStatus($("#sumStatus"), "Summary ready.");
+  } catch (e) {
+    setStatus($("#sumStatus"), e.message || "Summary failed. Please try again.", true);
+  } finally { btn.disabled = false; btn.textContent = "Generate summary"; }
+});
+ 
+function renderSummary(d) {
+  const out = $("#sumOut"); out.innerHTML = "";
+  const addList = (title, items) => {
+    out.appendChild(el("h3", null, title));
+    const ul = el("ul"); (items || []).forEach(i => ul.appendChild(el("li", null, String(i)))); out.appendChild(ul);
+  };
+  addList("Key points", d.key_points);
+  out.appendChild(el("h3", null, "Key terms"));
+  const dl = el("dl");
+  (d.key_terms || []).forEach(k => { dl.appendChild(el("dt", null, k.term)); dl.appendChild(el("dd", null, k.meaning)); });
+  out.appendChild(dl);
+  addList("Exam tips", d.exam_tips);
+}
+ 
+/* ---------- PRACTICE ---------- */
+$("#genBtn").addEventListener("click", async () => {
+  if ($("#sumNotes").value.trim()) chapter = { title: "Student notes or topic", text: $("#sumNotes").value.trim().slice(0, MAX_CHARS) };
+  if (!chapter.text) { setStatus($("#qStatus"), "Paste your notes or type a topic in the Summary tab first.", true); return; }
+  const btn = $("#genBtn"); btn.disabled = true; btn.textContent = "Generating...";
+  const n = $("#qCount").value, level = $("#qLevel").value;
+  setStatus($("#qStatus"), "Writing practice problems from your chapter...");
+  $("#qOut").innerHTML = "";
+  try {
+    const list = parseJSON(await ask(
+`You are an experienced tutor. From the chapter below, write ${n} ${level} practice problems for ${gradeText()} that test real understanding, not just memory. Mix conceptual and applied questions where the content allows.
+Return ONLY a valid JSON array, with no markdown, in this shape:
+[{"question":"...","hint":"a nudge that does NOT reveal the answer","solution":"a clear step-by-step worked solution"}]
+ 
+Chapter title: ${chapter.title}
+Chapter text:
+"""${chapter.text}"""`));
+    questions = list.map((q, i) => ({ ...q, id: i, attempts: 0, done: false, correct: false }));
+    renderQuestions();
+    setStatus($("#qStatus"), `${questions.length} problems ready. Try each one, then check your answer.`);
+  } catch (e) {
+    setStatus($("#qStatus"), e.message || "Could not create problems. Please try again.", true);
+  } finally { btn.disabled = false; btn.textContent = "Generate problems"; }
+});
+ 
+function renderQuestions() {
+  const out = $("#qOut"); out.innerHTML = "";
+  questions.forEach((q, idx) => {
+    const card = el("div", "q"); card.id = "q" + q.id;
+    card.appendChild(el("div", "qtext", `Q${idx + 1}. ${q.question}`));
+    const ta = el("textarea"); ta.placeholder = "Write your working and answer here..."; ta.style.minHeight = "90px"; ta.id = "a" + q.id;
+    card.appendChild(ta);
+    const row = el("div", "row");
+    const hintBtn = el("button", "ghost", "Show hint");
+    const checkBtn = el("button", null, "Check my answer");
+    const solBtn = el("button", "ghost", "Show solution");
+    row.append(hintBtn, checkBtn, solBtn);
+    card.appendChild(row);
+    const hintBox = el("div", "hint hidden"); hintBox.id = "h" + q.id;
+    hintBox.textContent = "Hint: " + (q.hint || "Break the problem into smaller steps.");
+    const fb = el("div", "feedback hidden"); fb.id = "f" + q.id;
+    const sol = el("div", "solution hidden"); sol.id = "s" + q.id; sol.textContent = q.solution || "";
+    card.append(hintBox, fb, sol);
+ 
+    hintBtn.addEventListener("click", () => hintBox.classList.remove("hidden"));
+    solBtn.addEventListener("click", () => { sol.classList.remove("hidden"); if (!q.done) markDone(q, false); });
+    checkBtn.addEventListener("click", () => checkAnswer(q, ta, fb, sol, checkBtn));
+    out.appendChild(card);
+  });
+}
+ 
+async function checkAnswer(q, ta, fb, sol, btn) {
+  const answer = ta.value.trim();
+  if (answer.length < 3) { fb.className = "feedback partly"; fb.textContent = "Write at least a short attempt first. Even a partial idea helps."; fb.classList.remove("hidden"); return; }
+  btn.disabled = true; fb.className = "feedback"; fb.textContent = "Checking your work..."; fb.classList.remove("hidden");
+  q.attempts++;
+  try {
+    const r = parseJSON(await ask(
+`You are a patient tutor coaching a student. Do NOT give the final answer directly unless the attempt number is 3 or more. Be encouraging and specific.
+Question: ${q.question}
+Reference solution (for you only, never reveal it before attempt 3): ${q.solution}
+Student answer: ${answer}
+Attempt number: ${q.attempts}
+Return ONLY valid JSON, with no markdown, in this shape:
+{"verdict":"correct|partly|incorrect","feedback":"2 to 3 sentences on what is right and what is missing","next_step":"one guiding question or hint for the student to try next"}`));
+    const verdict = ["correct", "partly", "incorrect"].includes(r.verdict) ? r.verdict : "partly";
+    fb.className = "feedback " + verdict;
+    fb.textContent = "";
+    const label = verdict === "correct" ? "Correct!" : verdict === "partly" ? "Partly correct" : "Not yet";
+    fb.appendChild(el("b", null, label + " "));
+    fb.appendChild(document.createTextNode(r.feedback || ""));
+    if (r.next_step && verdict !== "correct") fb.appendChild(el("div", "muted", "Next step: " + r.next_step));
+    if (verdict === "correct") { markDone(q, true); ta.disabled = true; btn.disabled = true; }
+    else if (q.attempts >= 3) { sol.classList.remove("hidden"); markDone(q, false); fb.appendChild(el("div", "muted", "Solution unlocked after 3 attempts. Review it and try a similar problem.")); }
+    else { btn.disabled = false; fb.appendChild(el("div", "muted", `Attempt ${q.attempts} of 3. Try again.`)); }
+  } catch (e) {
+    fb.className = "feedback partly"; fb.textContent = e.message || "Could not check your answer. Please try again.";
+    btn.disabled = false; q.attempts--;
+  }
+}
+ 
+function markDone(q, correct) {
+  if (q.done) return;
+  q.done = true; q.correct = correct;
+  stats.answered++; if (correct) stats.correct++;
+  const sKey = subject || "General";
+  bySub[sKey] = bySub[sKey] || { a: 0, c: 0 };
+  bySub[sKey].a++; if (correct) bySub[sKey].c++;
+  touchDaily();
+  daily.done = (daily.done || 0) + 1;
+  saveDaily();
+  renderDashboard();
+}
+ 
+/* ---------- PROGRESS ---------- */
+function renderStats() {
+  const acc = stats.answered ? Math.round(stats.correct / stats.answered * 100) : 0;
+  $("#stAnswered").textContent = stats.answered;
+  $("#stCorrect").textContent = stats.correct;
+  $("#stAcc").textContent = acc + "%";
+  $("#stBar").style.width = acc + "%";
+}
+ 
+/* ---------- FOCUS TIMER ---------- */
+let focusMode = true, remaining = 25 * 60, timerId = null, sessionsDone = 0;
+function paint() {
+  const m = String(Math.floor(remaining / 60)).padStart(2, "0"), s = String(remaining % 60).padStart(2, "0");
+  $("#clock").textContent = m + ":" + s;
+  $("#mode").textContent = focusMode ? "Focus" : "Break";
+}
+function resetTimer() { stop(); focusMode = true; remaining = 25 * 60; paint(); }
+function stop() { clearInterval(timerId); timerId = null; $("#startBtn").textContent = "Start"; }
+$("#startBtn").addEventListener("click", () => {
+  if (timerId) { stop(); return; }
+  $("#startBtn").textContent = "Pause";
+  timerId = setInterval(() => {
+    remaining--;
+    if (remaining <= 0) {
+      if (focusMode) { sessionsDone++; $("#sessions").textContent = sessionsDone; }
+      focusMode = !focusMode; remaining = (focusMode ? 25 : 5) * 60;
+    }
+    paint();
+  }, 1000);
+});
+$("#resetBtn").addEventListener("click", resetTimer);
+$("#swapBtn").addEventListener("click", () => { focusMode = !focusMode; remaining = (focusMode ? 25 : 5) * 60; paint(); });
+paint();
+</script>
+<div id="profBackdrop" class="prof-backdrop hidden"></div>
+<button type="button" class="profile-btn hidden" id="profileBtn" aria-haspopup="true" aria-expanded="false" aria-controls="profileMenu" aria-label="Profile">P</button>
+<div class="profile-menu hidden" id="profileMenu" role="menu">
+  <div class="pm-name" id="pmName"></div>
+  <button type="button" class="pm-item" id="pmSettings" role="menuitem">Settings</button>
+  <button type="button" class="pm-item pm-logout" id="pmLogout" role="menuitem">Log out</button>
+</div>
+<section class="settings-panel hidden" id="settingsPanel" aria-labelledby="setTitle">
+  <h2 id="setTitle">Settings</h2>
+  <h3>Theme</h3>
+  <div class="row">
+    <button type="button" class="ghost" data-set-palette="academic">Modern Academic</button>
+      <button type="button" class="ghost" data-set-palette="classic">Classic Blue</button>
+    <button type="button" class="ghost" data-set-palette="warm">Warm Paper</button>
+    <button type="button" class="ghost" data-set-palette="midnight">Midnight</button>
+    <button type="button" class="ghost" data-set-palette="forest">Forest</button>
+    <button type="button" class="ghost" data-set-palette="slate">Slate</button>
+  </div>
+  <h3>Appearance</h3>
+  <div class="row">
+    <button type="button" class="ghost" data-set-mode="light">Light</button>
+    <button type="button" class="ghost" data-set-mode="dark">Dark</button>
+    
+  </div>
+  <h3>Name</h3>
+  <input type="text" id="setName" autocomplete="name">
+  <h3>Email</h3>
+  <input type="text" id="setEmail" readonly>
+  <h3>Password</h3>
+  <label for="setCurPass">Current password</label>
+  <input type="password" id="setCurPass" autocomplete="current-password">
+  <label for="setNewPass">New password</label>
+  <input type="password" id="setNewPass" autocomplete="new-password" placeholder="At least 8 characters">
+  <label for="setNewPass2">Confirm new password</label>
+  <input type="password" id="setNewPass2" autocomplete="new-password">
+  <div class="row"><button type="button" id="setSave">Save changes</button><button type="button" class="ghost" id="setClose">Close</button></div>
+  <div class="status" id="setMsg"></div>
+  <div class="row"><button type="button" class="ghost" id="setLogout">Log out</button></div>
+</section>
+<div class="top-title" id="topTitle">StudyMate</div>
+<div id="navBackdrop" class="nav-backdrop hidden"></div>
+<button class="ai-fab" id="aiFab" aria-expanded="false" aria-controls="aiPanel">AI Help</button>
+<section class="ai-panel hidden" id="aiPanel" aria-label="AI study helper">
+  <div class="log" id="aiLog"><div class="muted">Ask me anything. AI answers work only when the app runs inside Claude (pilot version).</div></div>
+  <div class="ai-quick" id="aiQuick"><button type="button" data-q="Is topic ko Hinglish mein easy karke samjhao:">Hinglish mein samjhao</button><button type="button" data-q="Is question ko step-by-step solve karke samjhao:">Step-by-step solve karo</button><button type="button" data-q="Mere notes se 5 questions banao (answers ke saath). Notes:">Notes se questions banao</button></div>
+  <form id="aiForm">
+    
+    
+    
+    <textarea id="aiInput" placeholder="Ask anything..." aria-label="Your question"></textarea>
+    <button type="submit">Send</button>
+  </form>
+</section>
+<script>
+(function () {
+  const fab = document.getElementById("aiFab");
+  const panel = document.getElementById("aiPanel");
+  const oldForm = document.getElementById("aiForm");
+  const log = document.getElementById("aiLog");
+  if (!fab || !panel || !oldForm || !log) return;
+  // Replace the button and form with clean copies so no older listeners interfere.
+  const newFab = fab.cloneNode(true);
+  fab.parentNode.replaceChild(newFab, fab);
+  const form = oldForm.cloneNode(true);
+  oldForm.parentNode.replaceChild(form, oldForm);
+  const input = form.querySelector("textarea");
+  const sendBtn = form.querySelector('button[type="submit"]');
+  let pendingImage = null;
+  const micBtn = form.querySelector("#aiMic");
+  const camBtn = form.querySelector("#aiCamBtn");
+  const camInput = form.querySelector("#aiCam");
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (micBtn) {
+    if (!SpeechRec) {
+      micBtn.disabled = true;
+      micBtn.title = "Voice typing is not supported in this browser";
+    } else {
+      let rec = null;
+      micBtn.addEventListener("click", () => {
+        if (rec) { rec.stop(); return; }
+        rec = new SpeechRec();
+        rec.lang = "en-IN";
+        rec.interimResults = true;
+        rec.continuous = false;
+        micBtn.textContent = "Stop";
+        say("AI", "Listening... speak now. Tap Stop when you finish.");
+        rec.onresult = e => {
+          let t = "";
+          for (const r of e.results) t += r[0].transcript;
+          input.value = t;
+        };
+        rec.onend = () => { rec = null; micBtn.textContent = "Mic"; input.focus(); };
+        rec.onerror = e => {
+          rec = null;
+          micBtn.textContent = "Mic";
+          const code = e && e.error ? e.error : "unknown";
+          if (code === "not-allowed" || code === "service-not-allowed") say("AI", "Microphone access is blocked. Allow the microphone for this site in your browser settings, then try again. You can type your question instead.");
+          else if (code === "no-speech") say("AI", "I did not hear anything. Tap Mic and speak again.");
+          else say("AI", "Voice typing failed (" + code + "). You can type your question instead.");
+        };
+        try {
+          rec.start();
+        } catch (err) {
+          rec = null;
+          micBtn.textContent = "Mic";
+          say("AI", "Voice typing could not start. You can type your question instead.");
+        }
+      });
+    }
+  }
+  if (camBtn && camInput) {
+    camBtn.addEventListener("click", () => camInput.click());
+    camInput.addEventListener("change", e => {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      pendingImage = f;
+      say("AI", "Photo ready (" + f.name + "). Type a question if you want, then press Send.");
+    });
+  }
+  const history = [];
+ 
+  function say(who, text) {
+    const d = document.createElement("div");
+    d.style.margin = "0 0 10px";
+    const b = document.createElement("b");
+    b.textContent = who + ": ";
+    const s = document.createElement("span");
+    s.style.whiteSpace = "pre-wrap";
+    s.textContent = text;
+    d.appendChild(b);
+    d.appendChild(s);
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+    return s;
+  }
+ 
+  async function askAI(prompt) {
+    if (!window.claude || !claude.use) throw new Error("AI is not available in this view. Open the app from claude.ai.");
+    const sample = await claude.use("sample");
+    if (!sample) throw new Error("AI is not available in this view. Open the app from claude.ai.");
+    const opts = { cache: false };
+    if (pendingImage) {
+      const lim = typeof sample.limits === "function" ? await sample.limits() : null;
+      if (!lim || !lim.images) throw new Error("Photo questions are not available in this view. Open the app from claude.ai.");
+      opts.images = [pendingImage];
+    }
+    const r = await sample(prompt, opts);
+    return r.text;
+  }
+ 
+  document.querySelectorAll("#aiQuick button").forEach(b => b.addEventListener("click", () => {
+    input.value = (b.dataset.q + " " + input.value.trim()).trim();
+    form.dispatchEvent(new Event("submit", { cancelable: true }));
+  }));
+  newFab.addEventListener("click", () => {
+    const open = panel.classList.toggle("hidden") === false;
+    newFab.setAttribute("aria-expanded", String(open));
+    if (open) input.focus();
+  });
+ 
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const q = input.value.trim();
+    if (!q && !pendingImage) return;
+    input.value = "";
+    say("You", (q || "Photo question") + (pendingImage ? " (photo attached)" : ""));
+    history.push({ role: "user", text: q || "Photo question: please solve or explain the question in this photo." });
+    sendBtn.disabled = true;
+    const pending = say("AI", "Thinking...");
+    try {
+      const transcript = history.slice(-12).map(m => (m.role === "user" ? "User" : "Assistant") + ": " + m.text).join("\n");
+      const answer = await askAI("You are a friendly AI study assistant for school students in India. Reply in Hinglish (Hindi written in English letters, mixed with simple English words) unless the user asks for another language. Explain difficult topics in easy words with a simple example. Solve questions step by step, numbering each step and explaining why it is done. When the user pastes notes and asks for questions, write clear questions with answers based only on those notes. Keep answers short and organised, and offer to go deeper if needed.\n\nConversation so far:\n" + transcript + "\n\nReply to the last user message as the Assistant. Give only the reply.");
+      history.push({ role: "assistant", text: answer });
+      pending.textContent = answer;
+    } catch (err) {
+      pending.textContent = err.message || "Could not get an answer. Please try again.";
+    } finally {
+      sendBtn.disabled = false;
+      pendingImage = null;
+      if (camInput) camInput.value = "";
+    }
+  });
+})();
+</script>
+</body>
+</html>
